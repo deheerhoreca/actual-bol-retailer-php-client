@@ -282,7 +282,7 @@ class ClientGenerator
                 'description' => $parameter['description'] ?? null,
                 'in' => $parameter['in'],
                 'paramName' => null,
-                'required' => $parameter['required']
+                'required' => $parameter['required'] ?? false
             ];
 
             if ($parameter['in'] == 'query' && isset($parameter['schema']['$ref'])) {
