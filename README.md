@@ -1,4 +1,8 @@
-# This fork more closely follows the actual Bol.com API then the forked repo
+### This fork:
+* Follows the actual Bol.com API rather then the official specs.
+* Allows merging additional options into `GuzzleHttp\Client`
+* Adds the Economic Operator API - V1 (1.1.1)
+* Adds the Delivery Promise API (1.0.0)
 
 
 
