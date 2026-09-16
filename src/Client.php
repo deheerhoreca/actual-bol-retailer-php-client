@@ -91,106 +91,6 @@ class Client extends BaseClient
     }
 
     /**
-     * Gets the details of a catalog product by means of its EAN.
-     * @param string $ean The EAN number associated with this product.
-     * @param string|null $AcceptLanguage The language in which the catalog product details will be retrieved.
-     * @return Model\CatalogProduct|null
-     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
-     * @throws Exception\ResponseException when an unexpected response was received.
-     * @throws Exception\UnauthorizedException when the request was unauthorized.
-     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
-     * @throws Exception\Exception when something unexpected went wrong.
-     */
-    public function getCatalogProduct(string $ean, ?string $AcceptLanguage = null): ?Model\CatalogProduct
-    {
-        $url = "retailer/content/catalog-products/{$ean}";
-        $options = [
-            'produces' => 'application/vnd.retailer.v10+json',
-            'language' => $AcceptLanguage,
-        ];
-        $responseTypes = [
-            '200' => Model\CatalogProduct::class,
-            '404' => 'null',
-        ];
-
-        return $this->request('GET', $url, $options, $responseTypes);
-    }
-
-    /**
-     * Gets a selected number of recommendations for a product.
-     * @param Model\ChunkRecommendationsAttributes[] $productContents
-     * @return Model\ChunkRecommendationsPredictions[]
-     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
-     * @throws Exception\ResponseException when an unexpected response was received.
-     * @throws Exception\UnauthorizedException when the request was unauthorized.
-     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
-     * @throws Exception\Exception when something unexpected went wrong.
-     */
-    public function getChunkRecommendations(array $productContents): array
-    {
-        $url = "retailer/content/chunk-recommendations";
-        $options = [
-            'body' => Model\ChunkRecommendationsRequest::constructFromArray(['productContents' => $productContents]),
-            'produces' => 'application/vnd.retailer.v10+json',
-            'consumes' => 'application/vnd.retailer.v10+json',
-        ];
-        $responseTypes = [
-            '200' => Model\ChunkRecommendationsResponse::class,
-        ];
-
-        return $this->request('POST', $url, $options, $responseTypes)->recommendations;
-    }
-
-    /**
-     * Create content for an existing product.
-     * @param Model\CreateProductContentSingleRequest $createProductContentSingleRequest
-     * @return Model\ProcessStatus
-     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
-     * @throws Exception\ResponseException when an unexpected response was received.
-     * @throws Exception\UnauthorizedException when the request was unauthorized.
-     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
-     * @throws Exception\Exception when something unexpected went wrong.
-     */
-    public function postProductContent(Model\CreateProductContentSingleRequest $createProductContentSingleRequest): Model\ProcessStatus
-    {
-        $url = "retailer/content/products";
-        $options = [
-            'body' => $createProductContentSingleRequest,
-            'produces' => 'application/vnd.retailer.v10+json',
-            'consumes' => 'application/vnd.retailer.v10+json',
-        ];
-        $responseTypes = [
-            '202' => Model\ProcessStatus::class,
-        ];
-
-        return $this->request('POST', $url, $options, $responseTypes);
-    }
-
-    /**
-     * Gets the upload report of the product content submitted by upload id.
-     * @param string $uploadId The identifier of the upload report.
-     * @return Model\UploadReportResponse|null
-     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
-     * @throws Exception\ResponseException when an unexpected response was received.
-     * @throws Exception\UnauthorizedException when the request was unauthorized.
-     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
-     * @throws Exception\Exception when something unexpected went wrong.
-     */
-    public function getUploadReport(string $uploadId): ?Model\UploadReportResponse
-    {
-        $url = "retailer/content/upload-report/{$uploadId}";
-        $options = [
-            'produces' => 'application/vnd.retailer.v10+json',
-        ];
-        $responseTypes = [
-            '200' => Model\UploadReportResponse::class,
-            '404' => 'null',
-        ];
-
-        return $this->request('GET', $url, $options, $responseTypes);
-    }
-
-    /**
      * Get the product visits and the buy box percentage for an offer during a given period.
      * @param string $offerId Unique identifier for an offer.
      * @param Enum\GetOfferInsightsPeriod $period The time unit in which the offer insights are grouped.
@@ -835,7 +735,7 @@ class Client extends BaseClient
      * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
      * @throws Exception\Exception when something unexpected went wrong.
      */
-    public function getProductCategories(?string $AcceptLanguage = null): array
+    public function getProductCategories(?string $AcceptLanguage = 'nl'): array
     {
         $url = "retailer/products/categories";
         $options = [
@@ -2105,5 +2005,168 @@ class Client extends BaseClient
         ];
 
         return $this->request('GET', $url, $options, $responseTypes);
+    }
+
+    /**
+     * This endpoint allows for the creation of a new economic operator associated with a retailer. It accepts relevant
+     * details about the operator and stores them in the system.
+     * @param Model\CreateEconomicOperator $createEconomicOperator
+     * @return Model\EconomicOperator
+     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
+     * @throws Exception\ResponseException when an unexpected response was received.
+     * @throws Exception\UnauthorizedException when the request was unauthorized.
+     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
+     * @throws Exception\Exception when something unexpected went wrong.
+     */
+    public function createEconomicOperator(Model\CreateEconomicOperator $createEconomicOperator): Model\EconomicOperator
+    {
+        $url = "retailer/economic-operator";
+        $options = [
+            'body' => $createEconomicOperator,
+            'produces' => 'application/vnd.economic-operator.v1+json',
+            'consumes' => 'application/vnd.economic-operator.v1+json',
+        ];
+        $responseTypes = [
+            '200' => Model\EconomicOperator::class,
+        ];
+
+        return $this->request('POST', $url, $options, $responseTypes);
+    }
+
+    /**
+     * This endpoint allows for updating the details of a specific economic operator linked to a retailer. It requires
+     * the identification of the operator to be updated and the necessary data for modification.
+     * @param string $id Unique identifier for an economic operator that is to be updated. This ID is used to pinpoint
+     * the exact economic operator that needs to be modified with the new details provided in the request.
+     * @param Model\UpdateEconomicOperator $updateEconomicOperator
+     * @return Model\EconomicOperator|null
+     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
+     * @throws Exception\ResponseException when an unexpected response was received.
+     * @throws Exception\UnauthorizedException when the request was unauthorized.
+     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
+     * @throws Exception\Exception when something unexpected went wrong.
+     */
+    public function updateEconomicOperator(string $id, Model\UpdateEconomicOperator $updateEconomicOperator): ?Model\EconomicOperator
+    {
+        $url = "retailer/economic-operator/{$id}";
+        $options = [
+            'body' => $updateEconomicOperator,
+            'produces' => 'application/vnd.economic-operator.v1+json',
+            'consumes' => 'application/vnd.economic-operator.v1+json',
+        ];
+        $responseTypes = [
+            '200' => Model\EconomicOperator::class,
+            '404' => 'null',
+        ];
+
+        return $this->request('PUT', $url, $options, $responseTypes);
+    }
+
+    /**
+     * This endpoint allows you to retrieve detailed information about a single economic operator linked to a specific
+     * retailer. It requires identifying the operator you wish to retrieve.
+     * @param string $id Unique identifier for an economic operator being retrieved. This ID enables the fetching of
+     * detailed information about a particular economic operator.
+     * @return Model\EconomicOperator|null
+     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
+     * @throws Exception\ResponseException when an unexpected response was received.
+     * @throws Exception\UnauthorizedException when the request was unauthorized.
+     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
+     * @throws Exception\Exception when something unexpected went wrong.
+     */
+    public function getSingleEconomicOperator(string $id): ?Model\EconomicOperator
+    {
+        $url = "retailer/economic-operator/{$id}";
+        $options = [
+            'produces' => 'application/vnd.economic-operator.v1+json',
+        ];
+        $responseTypes = [
+            '200' => Model\EconomicOperator::class,
+            '404' => 'null',
+        ];
+
+        return $this->request('GET', $url, $options, $responseTypes);
+    }
+
+    /**
+     * This endpoint allows for the deletion of a specific economic operator linked to a retailer. It requires
+     * identifying the operator that needs to be removed from the system.
+     * @param string $id Unique identifier for an economic operator that is to be deleted. This ID is used to pinpoint
+     * the exact economic operator that needs to be removed from the retailer's list of economic operators.
+     * @return Model\EconomicOperator|null
+     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
+     * @throws Exception\ResponseException when an unexpected response was received.
+     * @throws Exception\UnauthorizedException when the request was unauthorized.
+     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
+     * @throws Exception\Exception when something unexpected went wrong.
+     */
+    public function deleteEconomicOperator(string $id): ?Model\EconomicOperator
+    {
+        $url = "retailer/economic-operator/{$id}";
+        $options = [
+            'produces' => 'application/vnd.economic-operator.v1+json',
+        ];
+        $responseTypes = [
+            '200' => Model\EconomicOperator::class,
+            '404' => 'null',
+        ];
+
+        return $this->request('DELETE', $url, $options, $responseTypes);
+    }
+
+    /**
+     * This endpoint allows you to retrieve detailed information about economic operators that correspond to a partial
+     * match search on name
+     * @param string|null $name Name or partial name of an economic operator. This name enables the partial match
+     * searching on economic operators.
+     * @param int|null $page
+     * @param int|null $pageSize
+     * @return Model\EconomicOperatorsPage|null
+     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
+     * @throws Exception\ResponseException when an unexpected response was received.
+     * @throws Exception\UnauthorizedException when the request was unauthorized.
+     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
+     * @throws Exception\Exception when something unexpected went wrong.
+     */
+    public function getAllEconomicOperators(?string $name = null, ?int $page = null, ?int $pageSize = null): ?Model\EconomicOperatorsPage
+    {
+        $url = "retailer/economic-operators";
+        $options = [
+            'query' => [
+                'name' => $name,
+                'page' => $page,
+                'page-size' => $pageSize,
+            ],
+            'produces' => 'application/vnd.economic-operator.v1+json',
+        ];
+        $responseTypes = [
+            '200' => Model\EconomicOperatorsPage::class,
+            '404' => 'null',
+        ];
+
+        return $this->request('GET', $url, $options, $responseTypes);
+    }
+
+    /**
+     * Retrieves a list of delivery promise profiles for the authenticated retailer. A profile defines the retailer
+     * handover days with latest order times, expected carrier delivery time and carrier working days
+     * @return Model\Profile[]
+     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
+     * @throws Exception\ResponseException when an unexpected response was received.
+     * @throws Exception\UnauthorizedException when the request was unauthorized.
+     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
+     * @throws Exception\Exception when something unexpected went wrong.
+     */
+    public function getDeliveryPromiseProfiles(): array
+    {
+        $url = "retailer/delivery-promise/profiles";
+        $options = [
+            'produces' => 'application/vnd.delivery-promise.v1+json',
+        ];
+        $responseTypes = [
+            '200' => Model\ProfilesResponse::class,
+        ];
+
+        return $this->request('GET', $url, $options, $responseTypes)->profiles;
     }
 }
