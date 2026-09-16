@@ -143,6 +143,7 @@ class ModelGenerator
         $code[] = '        return [';
 
         foreach ($modelSchema['properties'] as $name => $propDefinition) {
+            $propDefinition = $this->normalizeSchemaProperty($propDefinition);
             $model = 'null';
             $enum = 'null';
             $array = 'false';
@@ -173,6 +174,7 @@ class ModelGenerator
     protected function generateFields(string $type, array $modelSchema, array &$code): void
     {
         foreach ($modelSchema['properties'] as $name => $propDefinition) {
+            $propDefinition = $this->normalizeSchemaProperty($propDefinition);
             if (isset($propDefinition['type']) && ! isset($propDefinition['enum'])) {
                 $propType = static::$propTypeMapping[$propDefinition['type']];
                 if ($propType == 'array' && isset($propDefinition['items']['$ref'])) {
@@ -216,6 +218,7 @@ class ModelGenerator
     protected function generateDateTimeGetters(array $modelSchema, array &$code): void
     {
         foreach ($modelSchema['properties'] as $name => $propDefinition) {
+            $propDefinition = $this->normalizeSchemaProperty($propDefinition);
             if (strpos($name, 'DateTime') === false) {
                 continue;
             }
@@ -356,6 +359,7 @@ class ModelGenerator
         $fields = [];
 
         foreach ($modelSchema['properties'] as $propName => $propDefinition) {
+            $propDefinition = $this->normalizeSchemaProperty($propDefinition);
             $isArray = null;
             if (isset($propDefinition['$ref'])) {
                 $propType = $this->getType($propDefinition['$ref']);
@@ -377,7 +381,7 @@ class ModelGenerator
 
             $subPropName = array_keys($this->specs['components']['schemas'][$propType]['properties'])[0];
 
-            $subProp = $this->specs['components']['schemas'][$propType]['properties'][$subPropName];
+            $subProp = $this->normalizeSchemaProperty($this->specs['components']['schemas'][$propType]['properties'][$subPropName]);
             if (isset($subProp['type'])) {
                 $subPropType = $subProp['type'];
             } elseif (isset($subProp['$ref'])) {
@@ -427,5 +431,16 @@ class ModelGenerator
     {
         $wordWrapped = wordwrap(strip_tags($comment), $maxLength - strlen($linePrefix));
         return $linePrefix . trim(str_replace("\n", "\n{$linePrefix}", $wordWrapped));
+    }
+
+    protected function normalizeSchemaProperty(array $schema): array
+    {
+        if (isset($schema['allOf'][0]['$ref'])) {
+            return [
+                '$ref' => $schema['allOf'][0]['$ref'],
+            ];
+        }
+
+        return $schema;
     }
 }

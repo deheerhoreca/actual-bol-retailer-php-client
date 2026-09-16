@@ -66,7 +66,6 @@
                                 "UPDATE_OFFER_PRICE",
                                 "CREATE_OFFER_EXPORT",
                                 "UNPUBLISHED_OFFER_REPORT",
-                                "CREATE_PRODUCT_CONTENT",
                                 "CREATE_SUBSCRIPTION",
                                 "UPDATE_SUBSCRIPTION",
                                 "DELETE_SUBSCRIPTION",
@@ -276,12 +275,14 @@
                     "host": {
                         "type": "string",
                         "description": "Host identifier describing the server instance that reported the problem.",
+                        "nullable": true,
                         "example": "Instance-001"
                     },
                     "instance": {
                         "type": "string",
                         "description": "Full URI path of the resource that reported the problem.",
                         "format": "uri",
+                        "nullable": true,
                         "example": "https://api.bol.com//retailer/resource"
                     },
                     "violations": {
@@ -345,16 +346,10 @@
             "Link": {
                 "type": "object",
                 "properties": {
-                    "rel": {
-                        "type": "string"
-                    },
                     "href": {
                         "type": "string"
                     },
                     "hreflang": {
-                        "type": "string"
-                    },
-                    "media": {
                         "type": "string"
                     },
                     "title": {
@@ -371,6 +366,9 @@
                     },
                     "name": {
                         "type": "string"
+                    },
+                    "templated": {
+                        "type": "boolean"
                     }
                 }
             },
@@ -387,11 +385,13 @@
                     "processStatusId": {
                         "type": "string",
                         "description": "The process status id.",
+                        "nullable": true,
                         "example": "1234567"
                     },
                     "entityId": {
                         "type": "string",
                         "description": "The id of the object being processed. For example, in case of a shipment process id, you will receive the id of the order item being processed.",
+                        "nullable": true,
                         "example": "987654321"
                     },
                     "eventType": {
@@ -418,6 +418,7 @@
                     "errorMessage": {
                         "type": "string",
                         "description": "Shows error message if applicable.",
+                        "nullable": true,
                         "example": "Example process status error message."
                     },
                     "createTimestamp": {

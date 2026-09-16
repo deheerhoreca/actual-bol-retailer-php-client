@@ -1,0 +1,635 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Economic Operator API - V1",
+        "description": "Economic Operator endpoints",
+        "version": "1.1.1"
+    },
+    "paths": {
+        "/retailer/economic-operator": {
+            "post": {
+                "summary": "Create a new economic operator.",
+                "description": "This endpoint allows for the creation of a new economic operator associated with a retailer. It accepts relevant details about the operator and stores them in the system.",
+                "operationId": "create-economic-operator",
+                "x-bol-scopes": [
+                    "retailer",
+                    "economic-operators.manage"
+                ],
+                "tags": [
+                    "Management"
+                ],
+                "requestBody": {
+                    "description": "The request body for this endpoint is required to create a new economic operator associated with a retailer. It must be provided in JSON format and adhere to the specified schema.",
+                    "content": {
+                        "application/vnd.economic-operator.v1+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateEconomicOperator"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "The request was successful, and the economic operator has been created, updated, or deleted successfully.",
+                        "content": {
+                            "application/vnd.economic-operator.v1+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EconomicOperator"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "../common/responses.yaml#/components/responses/400"
+                    },
+                    "403": {
+                        "$ref": "../common/responses.yaml#/components/responses/403"
+                    },
+                    "409": {
+                        "$ref": "../common/responses.yaml#/components/responses/409"
+                    },
+                    "500": {
+                        "$ref": "../common/responses.yaml#/components/responses/500"
+                    },
+                    "503": {
+                        "$ref": "../common/responses.yaml#/components/responses/503"
+                    },
+                    "504": {
+                        "$ref": "../common/responses.yaml#/components/responses/504"
+                    }
+                }
+            }
+        },
+        "/retailer/economic-operator/{id}": {
+            "put": {
+                "summary": "Update a specific economic operator associated with a retailer",
+                "description": "This endpoint allows for updating the details of a specific economic operator linked to a retailer. It requires the identification of the operator to be updated and the necessary data for modification.",
+                "operationId": "update-economic-operator",
+                "x-bol-scopes": [
+                    "retailer",
+                    "economic-operators.manage"
+                ],
+                "tags": [
+                    "Management"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Unique identifier for an economic operator that is to be updated. This ID is used to pinpoint the exact economic operator that needs to be modified with the new details provided in the request.",
+                        "required": true,
+                        "schema": {
+                            "description": "The generated economic operator id.",
+                            "type": "string",
+                            "nullable": false,
+                            "example": "0c6573a2-a80c-48b7-a03e-d5939f1173fa"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "The request body for this PUT endpoint is required to update an existing economic operator associated with a retailer. It must include the necessary data for the update, provided in JSON format, and adhere to the specified schema.",
+                    "content": {
+                        "application/vnd.economic-operator.v1+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateEconomicOperator"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "The request was successful, and the economic operator has been created, updated, or deleted successfully.",
+                        "content": {
+                            "application/vnd.economic-operator.v1+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EconomicOperator"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "../common/responses.yaml#/components/responses/400"
+                    },
+                    "403": {
+                        "$ref": "../common/responses.yaml#/components/responses/403"
+                    },
+                    "404": {
+                        "$ref": "../common/responses.yaml#/components/responses/404"
+                    },
+                    "409": {
+                        "$ref": "../common/responses.yaml#/components/responses/409"
+                    },
+                    "500": {
+                        "$ref": "../common/responses.yaml#/components/responses/500"
+                    },
+                    "503": {
+                        "$ref": "../common/responses.yaml#/components/responses/503"
+                    },
+                    "504": {
+                        "$ref": "../common/responses.yaml#/components/responses/504"
+                    }
+                }
+            },
+            "get": {
+                "summary": "Retrieve a specific economic operator associated with a retailer",
+                "description": "This endpoint allows you to retrieve detailed information about a single economic operator linked to a specific retailer. It requires identifying the operator you wish to retrieve.",
+                "operationId": "get-single-economic-operator",
+                "x-bol-scopes": [
+                    "retailer",
+                    "economic-operators.manage",
+                    "economic-operators.read"
+                ],
+                "tags": [
+                    "Management"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Unique identifier for an economic operator being retrieved. This ID enables the fetching of detailed information about a particular economic operator.",
+                        "required": true,
+                        "schema": {
+                            "description": "The generated economic operator id.",
+                            "type": "string",
+                            "nullable": false,
+                            "example": "0c6573a2-a80c-48b7-a03e-d5939f1173fa"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The request was successful, and the economic operator's details have been retrieved successfully.",
+                        "content": {
+                            "application/vnd.economic-operator.v1+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EconomicOperator"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "../common/responses.yaml#/components/responses/400"
+                    },
+                    "403": {
+                        "$ref": "../common/responses.yaml#/components/responses/403"
+                    },
+                    "404": {
+                        "$ref": "../common/responses.yaml#/components/responses/404"
+                    },
+                    "500": {
+                        "$ref": "../common/responses.yaml#/components/responses/500"
+                    },
+                    "503": {
+                        "$ref": "../common/responses.yaml#/components/responses/503"
+                    },
+                    "504": {
+                        "$ref": "../common/responses.yaml#/components/responses/504"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete a specific economic operator associated with a retailer",
+                "description": "This endpoint allows for the deletion of a specific economic operator linked to a retailer. It requires identifying the operator that needs to be removed from the system.",
+                "operationId": "delete-economic-operator",
+                "x-bol-scopes": [
+                    "retailer",
+                    "economic-operators.manage"
+                ],
+                "tags": [
+                    "Management"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Unique identifier for an economic operator that is to be deleted. This ID is used to pinpoint the exact economic operator that needs to be removed from the retailer's list of economic operators.",
+                        "required": true,
+                        "schema": {
+                            "description": "The generated economic operator id.",
+                            "type": "string",
+                            "nullable": false,
+                            "example": "0c6573a2-a80c-48b7-a03e-d5939f1173fa"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The request was successful, and the economic operator has been created, updated, or deleted successfully.",
+                        "content": {
+                            "application/vnd.economic-operator.v1+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EconomicOperator"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "../common/responses.yaml#/components/responses/400"
+                    },
+                    "403": {
+                        "$ref": "../common/responses.yaml#/components/responses/403"
+                    },
+                    "404": {
+                        "$ref": "../common/responses.yaml#/components/responses/404"
+                    },
+                    "500": {
+                        "$ref": "../common/responses.yaml#/components/responses/500"
+                    },
+                    "503": {
+                        "$ref": "../common/responses.yaml#/components/responses/503"
+                    },
+                    "504": {
+                        "$ref": "../common/responses.yaml#/components/responses/504"
+                    }
+                }
+            }
+        },
+        "/retailer/economic-operators": {
+            "get": {
+                "summary": "Retrieve economic operators based on partial match search on a name",
+                "description": "This endpoint allows you to retrieve detailed information about economic operators that correspond to a partial match search on name",
+                "operationId": "get-all-economic-operators",
+                "x-bol-scopes": [
+                    "retailer",
+                    "economic-operators.manage",
+                    "economic-operators.read"
+                ],
+                "tags": [
+                    "Query"
+                ],
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "Name or partial name of an economic operator. This name enables the partial match searching on economic operators.",
+                        "required": false,
+                        "schema": {
+                            "description": "Represents the legal name of the economic operator.",
+                            "type": "string",
+                            "maxLength": 100,
+                            "example": "John"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "format": "int32",
+                            "description": "The current page number (1-indexed)",
+                            "type": "integer",
+                            "nullable": false,
+                            "minimum": 1,
+                            "maximum": 2147483647,
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "page-size",
+                        "in": "query",
+                        "schema": {
+                            "nullable": false,
+                            "format": "int32",
+                            "minimum": 25,
+                            "maximum": 100,
+                            "description": "Number of items per page, with a maximum limit of 100",
+                            "type": "integer",
+                            "example": 25
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The request was successfully processed, returning a paginated list of economic operators.",
+                        "content": {
+                            "application/vnd.economic-operator.v1+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EconomicOperatorsPage"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "../common/responses.yaml#/components/responses/400"
+                    },
+                    "403": {
+                        "$ref": "../common/responses.yaml#/components/responses/403"
+                    },
+                    "404": {
+                        "$ref": "../common/responses.yaml#/components/responses/404"
+                    },
+                    "500": {
+                        "$ref": "../common/responses.yaml#/components/responses/500"
+                    },
+                    "503": {
+                        "$ref": "../common/responses.yaml#/components/responses/503"
+                    },
+                    "504": {
+                        "$ref": "../common/responses.yaml#/components/responses/504"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "CreateEconomicOperator": {
+                "type": "object",
+                "description": "Represents the data structure required to create a new economic operator compliant with the Digital Services Act.",
+                "required": [
+                    "name",
+                    "address",
+                    "contactInformation"
+                ],
+                "properties": {
+                    "externalReference": {
+                        "description": "The reference for economic operator as it is known by the retailer.",
+                        "type": "string",
+                        "nullable": true,
+                        "maxLength": 100,
+                        "example": "external-reference"
+                    },
+                    "name": {
+                        "description": "Represents the legal name of the economic operator.",
+                        "type": "string",
+                        "maxLength": 100,
+                        "example": "John"
+                    },
+                    "address": {
+                        "$ref": "#/components/schemas/EconomicOperatorsAddress"
+                    },
+                    "contactInformation": {
+                        "$ref": "#/components/schemas/contactInformation"
+                    }
+                }
+            },
+            "EconomicOperatorsAddress": {
+                "description": "Specifies the full legal address, including street, house number, postal code, city, and country.",
+                "type": "object",
+                "required": [
+                    "street",
+                    "houseNumber",
+                    "postalCode",
+                    "city",
+                    "country"
+                ],
+                "properties": {
+                    "street": {
+                        "description": "The street name of the address.",
+                        "type": "string",
+                        "nullable": false,
+                        "example": "Papendorpseweg",
+                        "maxLength": 100
+                    },
+                    "houseNumber": {
+                        "description": "The house number, which may include extensions like 'A' or 'B'.",
+                        "type": "string",
+                        "nullable": false,
+                        "example": "27-A",
+                        "maxLength": 100
+                    },
+                    "additionalAddressInfo": {
+                        "description": "Optional additional information about the address (e.g., floor number, apartment number).",
+                        "type": "string",
+                        "nullable": true,
+                        "example": "floor 7, Apartment 1",
+                        "maxLength": 100
+                    },
+                    "postalCode": {
+                        "description": "The postal code of the address, following the country's postal code format.",
+                        "type": "string",
+                        "nullable": false,
+                        "example": "3528 BJ",
+                        "maxLength": 100
+                    },
+                    "city": {
+                        "description": "The city where the address is located.",
+                        "type": "string",
+                        "nullable": false,
+                        "example": "Utrecht",
+                        "maxLength": 100
+                    },
+                    "country": {
+                        "description": "Specifies the country within the European Union where the economic operator is located. Only supported EU countries are allowed.",
+                        "type": "string",
+                        "nullable": false,
+                        "enum": [
+                            "AT",
+                            "BE",
+                            "BG",
+                            "HR",
+                            "CY",
+                            "CZ",
+                            "DK",
+                            "EE",
+                            "FI",
+                            "FR",
+                            "DE",
+                            "GR",
+                            "HU",
+                            "IE",
+                            "IT",
+                            "LV",
+                            "LT",
+                            "LU",
+                            "MT",
+                            "NL",
+                            "PL",
+                            "PT",
+                            "RO",
+                            "SK",
+                            "SI",
+                            "ES",
+                            "SE",
+                            "XI"
+                        ],
+                        "example": "NL"
+                    }
+                }
+            },
+            "contactInformation": {
+                "description": "Represents the contact information of economic operator such as phone number and email",
+                "type": "object",
+                "required": [
+                    "phoneNumber",
+                    "emailAddress"
+                ],
+                "properties": {
+                    "emailAddress": {
+                        "description": "A valid email address.",
+                        "type": "string",
+                        "nullable": false,
+                        "example": "mail@company.com",
+                        "maxLength": 100
+                    },
+                    "phoneNumber": {
+                        "description": "A valid phone number.",
+                        "type": "string",
+                        "nullable": false,
+                        "minLength": 7,
+                        "maxLength": 17,
+                        "pattern": "^[0-9 ()+-]{7,17}$",
+                        "example": "+31623456787"
+                    }
+                }
+            },
+            "EconomicOperator": {
+                "type": "object",
+                "description": "Represents the details of an economic operator identified by the provided ID.",
+                "required": [
+                    "id",
+                    "name",
+                    "address",
+                    "contactInformation"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "The generated economic operator id.",
+                        "type": "string",
+                        "nullable": false,
+                        "example": "0c6573a2-a80c-48b7-a03e-d5939f1173fa"
+                    },
+                    "externalReference": {
+                        "description": "The reference for economic operator as it is known by the retailer.",
+                        "type": "string",
+                        "nullable": true,
+                        "maxLength": 100,
+                        "example": "external-reference"
+                    },
+                    "name": {
+                        "description": "Represents the legal name of the economic operator.",
+                        "type": "string",
+                        "maxLength": 100,
+                        "example": "John"
+                    },
+                    "address": {
+                        "$ref": "#/components/schemas/EconomicOperatorsAddress"
+                    },
+                    "contactInformation": {
+                        "$ref": "#/components/schemas/contactInformation"
+                    },
+                    "status": {
+                        "description": "Represents whether economic operator is valid",
+                        "type": "string",
+                        "nullable": false,
+                        "enum": [
+                            "PENDING",
+                            "VALID",
+                            "INVALID"
+                        ],
+                        "example": "VALID"
+                    }
+                }
+            },
+            "UpdateEconomicOperator": {
+                "description": "Represents the data structure for updating an existing economic operator, identified by the provided operator ID and retailer ID.",
+                "required": [
+                    "name",
+                    "address",
+                    "contactInformation"
+                ],
+                "properties": {
+                    "externalReference": {
+                        "description": "The reference for economic operator as it is known by the retailer.",
+                        "type": "string",
+                        "nullable": true,
+                        "maxLength": 100,
+                        "example": "external-reference"
+                    },
+                    "name": {
+                        "description": "Represents the legal name of the economic operator.",
+                        "type": "string",
+                        "maxLength": 100,
+                        "example": "John"
+                    },
+                    "address": {
+                        "$ref": "#/components/schemas/EconomicOperatorsAddress"
+                    },
+                    "contactInformation": {
+                        "$ref": "#/components/schemas/contactInformation"
+                    }
+                }
+            },
+            "EconomicOperatorsPage": {
+                "description": "Represents a paginated list of economic operators, including pagination metadata.",
+                "required": [
+                    "operators",
+                    "page"
+                ],
+                "properties": {
+                    "operators": {
+                        "type": "array",
+                        "nullable": false,
+                        "description": "List of economic operators on the current page.",
+                        "items": {
+                            "$ref": "#/components/schemas/EconomicOperator"
+                        }
+                    },
+                    "page": {
+                        "$ref": "#/components/schemas/page"
+                    }
+                }
+            },
+            "page": {
+                "type": "object",
+                "required": [
+                    "pageNumber",
+                    "pageSize",
+                    "numberOfPages",
+                    "totalCount"
+                ],
+                "properties": {
+                    "pageSize": {
+                        "nullable": false,
+                        "format": "int32",
+                        "minimum": 25,
+                        "maximum": 100,
+                        "description": "Number of items per page, with a maximum limit of 100",
+                        "type": "integer",
+                        "example": 25
+                    },
+                    "pageNumber": {
+                        "format": "int32",
+                        "description": "The current page number (1-indexed)",
+                        "type": "integer",
+                        "nullable": false,
+                        "minimum": 1,
+                        "maximum": 2147483647,
+                        "example": 1
+                    },
+                    "numberOfPages": {
+                        "format": "int32",
+                        "description": "Total number of pages available",
+                        "type": "integer",
+                        "nullable": false,
+                        "example": 4
+                    },
+                    "totalCount": {
+                        "format": "int64",
+                        "description": "Total count of all items",
+                        "type": "integer",
+                        "nullable": false,
+                        "example": 100
+                    }
+                }
+            },
+            "EconomicOperators": {
+                "description": "Represents detailed information about one or more economic operators.",
+                "required": [
+                    "operators"
+                ],
+                "properties": {
+                    "operators": {
+                        "type": "array",
+                        "nullable": true,
+                        "description": "A list containing detailed information about economic operators.",
+                        "items": {
+                            "$ref": "#/components/schemas/EconomicOperator"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -348,7 +348,7 @@ class ClientGenerator
                 $refSchema = $this->specs['components']['schemas'][$apiType];
                 if (count($refSchema['properties']) == 1) {
                     $property = array_keys($refSchema['properties'])[0];
-                    $propSchema = $refSchema['properties'][$property];
+                    $propSchema = $this->normalizeSchemaProperty($refSchema['properties'][$property]);
 
                     if (isset($propSchema['type']) && $propSchema['type'] == 'array') {
                         $itemsType = $this->getType($propSchema['items']['$ref']);
@@ -551,10 +551,11 @@ class ClientGenerator
             $refSchema = $this->specs['components']['schemas'][$apiType];
             if (count($refSchema['properties']) == 1) {
                 $property = array_keys($refSchema['properties'])[0];
-                if (isset($refSchema['properties'][$property]['type'], $refSchema['properties'][$property]['items']['$ref']) && $refSchema['properties'][$property]['type'] == 'array') {
+                $propertySchema = $this->normalizeSchemaProperty($refSchema['properties'][$property]);
+                if (isset($propertySchema['type'], $propertySchema['items']['$ref']) && $propertySchema['type'] == 'array') {
                     return [
                         'doc' => 'Model\\' . $this->getType(
-                                $refSchema['properties'][$property]['items']['$ref']
+                                $propertySchema['items']['$ref']
                             ) . '[]',
                         'php' => 'array',
                         'property' => $property
@@ -592,5 +593,16 @@ class ClientGenerator
     {
         $wordWrapped = wordwrap(strip_tags($comment), $maxLength - strlen($linePrefix));
         return $linePrefix . trim(str_replace("\n", "\n{$linePrefix}", $wordWrapped));
+    }
+
+    protected function normalizeSchemaProperty(array $schema): array
+    {
+        if (isset($schema['allOf'][0]['$ref'])) {
+            return [
+                '$ref' => $schema['allOf'][0]['$ref'],
+            ];
+        }
+
+        return $schema;
     }
 }
