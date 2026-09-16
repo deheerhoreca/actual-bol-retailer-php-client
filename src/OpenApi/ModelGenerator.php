@@ -112,6 +112,8 @@ class ModelGenerator
     {
         echo $name . "...";
 
+        $values = $this->normalizeEnumValues($values);
+
         $code = [];
         $code[] = '<?php';
         $code[] = '';
@@ -431,6 +433,15 @@ class ModelGenerator
     {
         $wordWrapped = wordwrap(strip_tags($comment), $maxLength - strlen($linePrefix));
         return $linePrefix . trim(str_replace("\n", "\n{$linePrefix}", $wordWrapped));
+    }
+
+    protected function normalizeEnumValues(array $values): array
+    {
+        if (count($values) === 1 && str_contains($values[0], ',')) {
+            return array_map('trim', explode(',', $values[0]));
+        }
+
+        return $values;
     }
 
     protected function normalizeSchemaProperty(array $schema): array
