@@ -104,7 +104,7 @@ class ClientGenerator
         $arguments = $this->extractArguments($methodDefinition);
 
         $nullableReturnType = false;
-        if (isset($methodDefinition['responses']['404'])) {
+        if ($this->shouldTreat404AsNullable($methodDefinition['responses'])) {
             $nullableReturnType = true;
             if (! isset($returnType['property'])) {
                 $returnType['doc'] = $returnType['doc'] . '|null';
@@ -282,7 +282,7 @@ class ClientGenerator
                 'description' => $parameter['description'] ?? null,
                 'in' => $parameter['in'],
                 'paramName' => null,
-                'required' => $parameter['required'] ?? false
+                'required' => $parameter['required'] ?? ($parameter['in'] === 'path')
             ];
 
             if ($parameter['in'] == 'query' && isset($parameter['schema']['$ref'])) {
@@ -520,7 +520,7 @@ class ClientGenerator
                 } else {
                     $type = '\'string\'';
                 }
-            } elseif ($httpStatus == '404') {
+            } elseif ($httpStatus == '404' && $this->shouldTreat404AsNullable($responses)) {
                 $type = '\'null\'';
             }
             if ($type !== null) {
@@ -554,9 +554,7 @@ class ClientGenerator
                 $propertySchema = $this->normalizeSchemaProperty($refSchema['properties'][$property]);
                 if (isset($propertySchema['type'], $propertySchema['items']['$ref']) && $propertySchema['type'] == 'array') {
                     return [
-                        'doc' => 'Model\\' . $this->getType(
-                                $propertySchema['items']['$ref']
-                            ) . '[]',
+                        'doc' => 'Model\\' . $this->getType($propertySchema['items']['$ref']) . '[]',
                         'php' => 'array',
                         'property' => $property
                     ];
@@ -604,5 +602,14 @@ class ClientGenerator
         }
 
         return $schema;
+    }
+
+    protected function shouldTreat404AsNullable(array $responses): bool
+    {
+        if (! isset($responses['404'])) {
+            return false;
+        }
+
+        return ! isset($responses['404']['$ref']);
     }
 }

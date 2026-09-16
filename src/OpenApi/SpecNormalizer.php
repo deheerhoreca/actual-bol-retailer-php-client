@@ -148,6 +148,16 @@ class SpecNormalizer
             $normalized['items'] = $this->normalizeSchemaReference($normalized['items'], $documentUri, $collisionPrefix);
         }
 
+        foreach (['allOf', 'oneOf', 'anyOf'] as $compositionKeyword) {
+            if (! isset($normalized[$compositionKeyword])) {
+                continue;
+            }
+
+            $normalized[$compositionKeyword] = array_map(function (array $subSchema) use ($documentUri, $collisionPrefix) {
+                return $this->normalizeSchemaReference($subSchema, $documentUri, $collisionPrefix);
+            }, $normalized[$compositionKeyword]);
+        }
+
         return $normalized;
     }
 
