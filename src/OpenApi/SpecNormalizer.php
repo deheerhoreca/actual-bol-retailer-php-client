@@ -68,7 +68,10 @@ class SpecNormalizer
 
         if (isset($normalized['responses'])) {
             foreach ($normalized['responses'] as $statusCode => $response) {
-                if (in_array((string) $statusCode, ['200', '202', '207'], true)) {
+                // Only 2xx responses drive generated return types and need their schemas
+                // rewritten to local references; 4xx/5xx responses referencing external
+                // shared documents are intentionally left untouched.
+                if (preg_match('/^2\d\d$/', (string) $statusCode) === 1) {
                     $normalized['responses'][$statusCode] = $this->normalizeResponse($response, $documentUri, $collisionPrefix);
                 }
             }

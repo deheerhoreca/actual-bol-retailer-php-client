@@ -6,6 +6,8 @@ use Exception;
 
 class ClientGenerator
 {
+    use SchemaPropertyNormalizer;
+
     protected $specs;
 
     protected static $overrideMethodNames = [
@@ -104,7 +106,7 @@ class ClientGenerator
         $arguments = $this->extractArguments($methodDefinition);
 
         $nullableReturnType = false;
-        if ($this->shouldTreat404AsNullable($methodDefinition['responses'])) {
+        if ($this->hasInlined404Response($methodDefinition['responses'])) {
             $nullableReturnType = true;
             if (! isset($returnType['property'])) {
                 $returnType['doc'] = $returnType['doc'] . '|null';
@@ -520,7 +522,7 @@ class ClientGenerator
                 } else {
                     $type = '\'string\'';
                 }
-            } elseif ($httpStatus == '404' && $this->shouldTreat404AsNullable($responses)) {
+            } elseif ($httpStatus == '404' && $this->hasInlined404Response($responses)) {
                 $type = '\'null\'';
             }
             if ($type !== null) {
@@ -593,18 +595,12 @@ class ClientGenerator
         return $linePrefix . trim(str_replace("\n", "\n{$linePrefix}", $wordWrapped));
     }
 
-    protected function normalizeSchemaProperty(array $schema): array
-    {
-        if (isset($schema['allOf'][0]['$ref'])) {
-            return [
-                '$ref' => $schema['allOf'][0]['$ref'],
-            ];
-        }
-
-        return $schema;
-    }
-
-    protected function shouldTreat404AsNullable(array $responses): bool
+    /**
+     * A 404 response participates in return-type nullability only when it declares an inline
+     * body schema. Registry specs (e.g. economic-operators) reference shared 4xx responses via
+     * an external `$ref`, so those must not be treated as "resource missing" returns.
+     */
+    protected function hasInlined404Response(array $responses): bool
     {
         if (! isset($responses['404'])) {
             return false;

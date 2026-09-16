@@ -4,6 +4,8 @@ namespace Picqer\BolRetailerV10\OpenApi;
 
 class ModelGenerator
 {
+    use SchemaPropertyNormalizer;
+
     protected static $propTypeMapping = [
         'array' => 'array',
         'string' => 'string',
@@ -435,6 +437,11 @@ class ModelGenerator
         return $linePrefix . trim(str_replace("\n", "\n{$linePrefix}", $wordWrapped));
     }
 
+    /**
+     * Some upstream specs (observed in shared.json) declare a string enum whose single value is a
+     * comma-separated list, e.g. `enum: ["A, B, C"]`. Split that into individual enum cases so the
+     * generated PHP enum stays faithful to the intended set of values.
+     */
     protected function normalizeEnumValues(array $values): array
     {
         if (count($values) === 1 && str_contains($values[0], ',')) {
@@ -442,16 +449,5 @@ class ModelGenerator
         }
 
         return $values;
-    }
-
-    protected function normalizeSchemaProperty(array $schema): array
-    {
-        if (isset($schema['allOf'][0]['$ref'])) {
-            return [
-                '$ref' => $schema['allOf'][0]['$ref'],
-            ];
-        }
-
-        return $schema;
     }
 }
