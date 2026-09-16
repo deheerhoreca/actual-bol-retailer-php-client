@@ -2039,14 +2039,14 @@ class Client extends BaseClient
      * @param string $id Unique identifier for an economic operator that is to be updated. This ID is used to pinpoint
      * the exact economic operator that needs to be modified with the new details provided in the request.
      * @param Model\UpdateEconomicOperator $updateEconomicOperator
-     * @return Model\EconomicOperator|null
+     * @return Model\EconomicOperator
      * @throws Exception\ConnectException when an error occurred in the HTTP connection.
      * @throws Exception\ResponseException when an unexpected response was received.
      * @throws Exception\UnauthorizedException when the request was unauthorized.
      * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
      * @throws Exception\Exception when something unexpected went wrong.
      */
-    public function updateEconomicOperator(string $id, Model\UpdateEconomicOperator $updateEconomicOperator): ?Model\EconomicOperator
+    public function updateEconomicOperator(string $id, Model\UpdateEconomicOperator $updateEconomicOperator): Model\EconomicOperator
     {
         $url = "retailer/economic-operator/{$id}";
         $options = [
@@ -2056,7 +2056,6 @@ class Client extends BaseClient
         ];
         $responseTypes = [
             '200' => Model\EconomicOperator::class,
-            '404' => 'null',
         ];
 
         return $this->request('PUT', $url, $options, $responseTypes);
@@ -2067,14 +2066,14 @@ class Client extends BaseClient
      * retailer. It requires identifying the operator you wish to retrieve.
      * @param string $id Unique identifier for an economic operator being retrieved. This ID enables the fetching of
      * detailed information about a particular economic operator.
-     * @return Model\EconomicOperator|null
+     * @return Model\EconomicOperator
      * @throws Exception\ConnectException when an error occurred in the HTTP connection.
      * @throws Exception\ResponseException when an unexpected response was received.
      * @throws Exception\UnauthorizedException when the request was unauthorized.
      * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
      * @throws Exception\Exception when something unexpected went wrong.
      */
-    public function getSingleEconomicOperator(string $id): ?Model\EconomicOperator
+    public function getSingleEconomicOperator(string $id): Model\EconomicOperator
     {
         $url = "retailer/economic-operator/{$id}";
         $options = [
@@ -2082,7 +2081,6 @@ class Client extends BaseClient
         ];
         $responseTypes = [
             '200' => Model\EconomicOperator::class,
-            '404' => 'null',
         ];
 
         return $this->request('GET', $url, $options, $responseTypes);
@@ -2093,14 +2091,14 @@ class Client extends BaseClient
      * identifying the operator that needs to be removed from the system.
      * @param string $id Unique identifier for an economic operator that is to be deleted. This ID is used to pinpoint
      * the exact economic operator that needs to be removed from the retailer's list of economic operators.
-     * @return Model\EconomicOperator|null
+     * @return Model\EconomicOperator
      * @throws Exception\ConnectException when an error occurred in the HTTP connection.
      * @throws Exception\ResponseException when an unexpected response was received.
      * @throws Exception\UnauthorizedException when the request was unauthorized.
      * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
      * @throws Exception\Exception when something unexpected went wrong.
      */
-    public function deleteEconomicOperator(string $id): ?Model\EconomicOperator
+    public function deleteEconomicOperator(string $id): Model\EconomicOperator
     {
         $url = "retailer/economic-operator/{$id}";
         $options = [
@@ -2108,7 +2106,6 @@ class Client extends BaseClient
         ];
         $responseTypes = [
             '200' => Model\EconomicOperator::class,
-            '404' => 'null',
         ];
 
         return $this->request('DELETE', $url, $options, $responseTypes);
@@ -2121,14 +2118,14 @@ class Client extends BaseClient
      * searching on economic operators.
      * @param int|null $page
      * @param int|null $pageSize
-     * @return Model\EconomicOperatorsPage|null
+     * @return Model\EconomicOperatorsPage
      * @throws Exception\ConnectException when an error occurred in the HTTP connection.
      * @throws Exception\ResponseException when an unexpected response was received.
      * @throws Exception\UnauthorizedException when the request was unauthorized.
      * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
      * @throws Exception\Exception when something unexpected went wrong.
      */
-    public function getAllEconomicOperators(?string $name = null, ?int $page = null, ?int $pageSize = null): ?Model\EconomicOperatorsPage
+    public function getAllEconomicOperators(?string $name = null, ?int $page = null, ?int $pageSize = null): Model\EconomicOperatorsPage
     {
         $url = "retailer/economic-operators";
         $options = [
@@ -2141,7 +2138,6 @@ class Client extends BaseClient
         ];
         $responseTypes = [
             '200' => Model\EconomicOperatorsPage::class,
-            '404' => 'null',
         ];
 
         return $this->request('GET', $url, $options, $responseTypes);
