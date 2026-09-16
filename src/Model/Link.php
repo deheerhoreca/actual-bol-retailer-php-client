@@ -17,16 +17,22 @@ class Link extends AbstractModel
     public function getModelDefinition(): array
     {
         return [
+            'rel' => [ 'model' => null, 'enum' => null, 'array' => false ],
             'href' => [ 'model' => null, 'enum' => null, 'array' => false ],
             'hreflang' => [ 'model' => null, 'enum' => null, 'array' => false ],
+            'media' => [ 'model' => null, 'enum' => null, 'array' => false ],
             'title' => [ 'model' => null, 'enum' => null, 'array' => false ],
             'type' => [ 'model' => null, 'enum' => null, 'array' => false ],
             'deprecation' => [ 'model' => null, 'enum' => null, 'array' => false ],
             'profile' => [ 'model' => null, 'enum' => null, 'array' => false ],
             'name' => [ 'model' => null, 'enum' => null, 'array' => false ],
-            'templated' => [ 'model' => null, 'enum' => null, 'array' => false ],
         ];
     }
+
+    /**
+     * @var string
+     */
+    public $rel;
 
     /**
      * @var string
@@ -37,6 +43,11 @@ class Link extends AbstractModel
      * @var string
      */
     public $hreflang;
+
+    /**
+     * @var string
+     */
+    public $media;
 
     /**
      * @var string
@@ -62,9 +73,4 @@ class Link extends AbstractModel
      * @var string
      */
     public $name;
-
-    /**
-     * @var bool
-     */
-    public $templated;
 }

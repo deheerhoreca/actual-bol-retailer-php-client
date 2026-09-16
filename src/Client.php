@@ -91,6 +91,106 @@ class Client extends BaseClient
     }
 
     /**
+     * Gets the details of a catalog product by means of its EAN.
+     * @param string $ean The EAN number associated with this product.
+     * @param string|null $AcceptLanguage The language in which the catalog product details will be retrieved.
+     * @return Model\CatalogProduct|null
+     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
+     * @throws Exception\ResponseException when an unexpected response was received.
+     * @throws Exception\UnauthorizedException when the request was unauthorized.
+     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
+     * @throws Exception\Exception when something unexpected went wrong.
+     */
+    public function getCatalogProduct(string $ean, ?string $AcceptLanguage = null): ?Model\CatalogProduct
+    {
+        $url = "retailer/content/catalog-products/{$ean}";
+        $options = [
+            'produces' => 'application/vnd.retailer.v10+json',
+            'language' => $AcceptLanguage,
+        ];
+        $responseTypes = [
+            '200' => Model\CatalogProduct::class,
+            '404' => 'null',
+        ];
+
+        return $this->request('GET', $url, $options, $responseTypes);
+    }
+
+    /**
+     * Gets a selected number of recommendations for a product.
+     * @param Model\ChunkRecommendationsAttributes[] $productContents
+     * @return Model\ChunkRecommendationsPredictions[]
+     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
+     * @throws Exception\ResponseException when an unexpected response was received.
+     * @throws Exception\UnauthorizedException when the request was unauthorized.
+     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
+     * @throws Exception\Exception when something unexpected went wrong.
+     */
+    public function getChunkRecommendations(array $productContents): array
+    {
+        $url = "retailer/content/chunk-recommendations";
+        $options = [
+            'body' => Model\ChunkRecommendationsRequest::constructFromArray(['productContents' => $productContents]),
+            'produces' => 'application/vnd.retailer.v10+json',
+            'consumes' => 'application/vnd.retailer.v10+json',
+        ];
+        $responseTypes = [
+            '200' => Model\ChunkRecommendationsResponse::class,
+        ];
+
+        return $this->request('POST', $url, $options, $responseTypes)->recommendations;
+    }
+
+    /**
+     * Create content for an existing product.
+     * @param Model\CreateProductContentSingleRequest $createProductContentSingleRequest
+     * @return Model\ProcessStatus
+     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
+     * @throws Exception\ResponseException when an unexpected response was received.
+     * @throws Exception\UnauthorizedException when the request was unauthorized.
+     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
+     * @throws Exception\Exception when something unexpected went wrong.
+     */
+    public function postProductContent(Model\CreateProductContentSingleRequest $createProductContentSingleRequest): Model\ProcessStatus
+    {
+        $url = "retailer/content/products";
+        $options = [
+            'body' => $createProductContentSingleRequest,
+            'produces' => 'application/vnd.retailer.v10+json',
+            'consumes' => 'application/vnd.retailer.v10+json',
+        ];
+        $responseTypes = [
+            '202' => Model\ProcessStatus::class,
+        ];
+
+        return $this->request('POST', $url, $options, $responseTypes);
+    }
+
+    /**
+     * Gets the upload report of the product content submitted by upload id.
+     * @param string $uploadId The identifier of the upload report.
+     * @return Model\UploadReportResponse|null
+     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
+     * @throws Exception\ResponseException when an unexpected response was received.
+     * @throws Exception\UnauthorizedException when the request was unauthorized.
+     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
+     * @throws Exception\Exception when something unexpected went wrong.
+     */
+    public function getUploadReport(string $uploadId): ?Model\UploadReportResponse
+    {
+        $url = "retailer/content/upload-report/{$uploadId}";
+        $options = [
+            'produces' => 'application/vnd.retailer.v10+json',
+        ];
+        $responseTypes = [
+            '200' => Model\UploadReportResponse::class,
+            '404' => 'null',
+        ];
+
+        return $this->request('GET', $url, $options, $responseTypes);
+    }
+
+    /**
      * Get the product visits and the buy box percentage for an offer during a given period.
      * @param string $offerId Unique identifier for an offer.
      * @param Enum\GetOfferInsightsPeriod $period The time unit in which the offer insights are grouped.
@@ -735,7 +835,7 @@ class Client extends BaseClient
      * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
      * @throws Exception\Exception when something unexpected went wrong.
      */
-    public function getProductCategories(?string $AcceptLanguage = 'nl'): array
+    public function getProductCategories(?string $AcceptLanguage = null): array
     {
         $url = "retailer/products/categories";
         $options = [

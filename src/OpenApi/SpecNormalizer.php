@@ -2,6 +2,8 @@
 
 namespace Picqer\BolRetailerV10\OpenApi;
 
+use RuntimeException;
+
 class SpecNormalizer
 {
     private array $documents = [];
@@ -267,7 +269,16 @@ class SpecNormalizer
 
         foreach ($segments as $segment) {
             $segment = str_replace(['~1', '~0'], ['/', '~'], $segment);
+
+            if (! is_array($resolved) || ! array_key_exists($segment, $resolved)) {
+                throw new RuntimeException(sprintf('Unable to resolve JSON pointer "%s".', $pointer));
+            }
+
             $resolved = $resolved[$segment];
+        }
+
+        if (! is_array($resolved)) {
+            throw new RuntimeException(sprintf('JSON pointer "%s" did not resolve to an object schema.', $pointer));
         }
 
         return $resolved;
@@ -285,6 +296,10 @@ class SpecNormalizer
         if ($extension === 'json') {
             $document = json_decode($contents, true);
         } else {
+            if (! function_exists('yaml_parse')) {
+                throw new RuntimeException('The ext-yaml extension is required to normalize YAML OpenAPI specs.');
+            }
+
             $document = yaml_parse($contents);
         }
 

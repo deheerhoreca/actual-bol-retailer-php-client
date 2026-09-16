@@ -12,6 +12,7 @@ use GuzzleHttp\Client as HttpClient;
 use Picqer\BolRetailerV10\Model\AbstractModel;
 use Picqer\BolRetailerV10\Model\OrderItem;
 use Picqer\BolRetailerV10\Model\Profile;
+use Picqer\BolRetailerV10\Model\WorkingDay;
 
 #[AllowMockObjectsWithoutExpectations]
 class ClientTest extends TestCase
@@ -191,5 +192,7 @@ class ClientTest extends TestCase
         $this->assertIsArray($profiles);
         $this->assertInstanceOf(Profile::class, $profiles[0]);
         $this->assertEquals('Default', $profiles[0]->name);
+        $this->assertInstanceOf(WorkingDay::class, $profiles[0]->workingDays[0]);
+        $this->assertEquals('MONDAY', $profiles[0]->workingDays[0]->dayOfWeek->value);
     }
 }

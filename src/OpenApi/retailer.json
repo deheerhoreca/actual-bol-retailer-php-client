@@ -45,6 +45,10 @@
             "description": "Order resource"
         },
         {
+            "name": "Product Content",
+            "description": "Product content resource"
+        },
+        {
             "name": "Products",
             "description": "Products resource"
         },
@@ -247,6 +251,213 @@
                     },
                     "400": {
                         "description": "Bad request: The sent request does not meet the API specification. Please check the error message(s) for more information.",
+                        "content": {
+                            "application/vnd.retailer.v10+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Problem"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/retailer/content/catalog-products/{ean}": {
+            "get": {
+                "tags": [
+                    "Product Content"
+                ],
+                "summary": "Get catalog product details by EAN",
+                "description": "Gets the details of a catalog product by means of its EAN.",
+                "operationId": "get-catalog-product",
+                "parameters": [
+                    {
+                        "name": "ean",
+                        "in": "path",
+                        "description": "The EAN number associated with this product.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "0000007740404"
+                    },
+                    {
+                        "name": "Accept-Language",
+                        "in": "header",
+                        "description": "The language in which the catalog product details will be retrieved.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "nl",
+                                "nl-BE",
+                                "fr",
+                                "fr-BE"
+                            ]
+                        },
+                        "example": "nl"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok: Successfully processed the request.",
+                        "content": {
+                            "application/vnd.retailer.v10+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CatalogProduct"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request: The sent request does not meet the API specification. Please check the error message(s) for more information.",
+                        "content": {
+                            "application/vnd.retailer.v10+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Problem"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found: The requested item could not be found.",
+                        "content": {
+                            "application/vnd.retailer.v10+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Problem"
+                                }
+                            }
+                        }
+                    },
+                    "406": {
+                        "description": "Not acceptable: The sent request header does not meet the API specification. Please check the error message(s) for more information.",
+                        "content": {
+                            "application/vnd.retailer.v10+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Problem"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/retailer/content/chunk-recommendations": {
+            "post": {
+                "tags": [
+                    "Product Content"
+                ],
+                "summary": "Get chunk recommendations",
+                "description": "Gets a selected number of recommendations for a product.",
+                "operationId": "get-chunk-recommendations",
+                "requestBody": {
+                    "content": {
+                        "application/vnd.retailer.v10+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChunkRecommendationsRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok: Successfully processed the request.",
+                        "content": {
+                            "application/vnd.retailer.v10+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ChunkRecommendationsResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request: The sent request does not meet the API specification. Please check the error message(s) for more information.",
+                        "content": {
+                            "application/vnd.retailer.v10+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Problem"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/retailer/content/products": {
+            "post": {
+                "tags": [
+                    "Product Content"
+                ],
+                "summary": "Create content for a product",
+                "description": "Create content for an existing product.",
+                "operationId": "post-product-content",
+                "requestBody": {
+                    "content": {
+                        "application/vnd.retailer.v10+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateProductContentSingleRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "description": "Accepted: Successfully scheduled the request for processing.",
+                        "content": {
+                            "application/vnd.retailer.v10+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProcessStatus"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request: The sent request does not meet the API specification. Please check the error message(s) for more information.",
+                        "content": {
+                            "application/vnd.retailer.v10+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Problem"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/retailer/content/upload-report/{upload-id}": {
+            "get": {
+                "tags": [
+                    "Product Content"
+                ],
+                "summary": "Get an upload report by upload id",
+                "description": "Gets the upload report of the product content submitted by upload id.",
+                "operationId": "get-upload-report",
+                "parameters": [
+                    {
+                        "name": "upload-id",
+                        "in": "path",
+                        "description": "The identifier of the upload report.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok: Successfully processed the request.",
+                        "content": {
+                            "application/vnd.retailer.v10+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UploadReportResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found: The requested item could not be found.",
                         "content": {
                             "application/vnd.retailer.v10+json": {
                                 "schema": {
@@ -689,7 +900,8 @@
                         "schema": {
                             "type": "string",
                             "enum": [
-                                "SUFFICIENT, INSUFFICIENT"
+                                "SUFFICIENT",
+                                "INSUFFICIENT"
                             ]
                         },
                         "example": "SUFFICIENT"
@@ -702,7 +914,8 @@
                         "schema": {
                             "type": "string",
                             "enum": [
-                                "REGULAR, GRADED"
+                                "REGULAR",
+                                "GRADED"
                             ]
                         },
                         "example": "REGULAR"
@@ -1518,7 +1731,6 @@
                         "required": false,
                         "schema": {
                             "type": "string",
-                            "default": "FBR",
                             "enum": [
                                 "FBR",
                                 "FBB",
@@ -1533,7 +1745,6 @@
                         "required": false,
                         "schema": {
                             "type": "string",
-                            "default": "OPEN",
                             "enum": [
                                 "OPEN",
                                 "SHIPPED",
@@ -1686,9 +1897,11 @@
                         "required": false,
                         "schema": {
                             "type": "string",
-                            "default": "nl",
                             "enum": [
-                                "nl, nl-BE, nl-NL, fr-BE"
+                                "nl",
+                                "nl-BE",
+                                "nl-NL",
+                                "fr-BE"
                             ]
                         },
                         "example": "nl"
@@ -1745,7 +1958,10 @@
                         "schema": {
                             "type": "string",
                             "enum": [
-                                "nl, nl-BE, nl-NL, fr-BE"
+                                "nl",
+                                "nl-BE",
+                                "nl-NL",
+                                "fr-BE"
                             ]
                         },
                         "example": "nl"
@@ -1822,7 +2038,8 @@
                         "schema": {
                             "type": "string",
                             "enum": [
-                                "NL, BE"
+                                "NL",
+                                "BE"
                             ]
                         },
                         "example": "NL"
@@ -1859,7 +2076,10 @@
                         "schema": {
                             "type": "string",
                             "enum": [
-                                "nl, nl-BE, nl-NL, fr-BE"
+                                "nl",
+                                "nl-BE",
+                                "nl-NL",
+                                "fr-BE"
                             ]
                         },
                         "example": "nl"
@@ -1944,7 +2164,9 @@
                         "schema": {
                             "type": "string",
                             "enum": [
-                                "PRIMARY, ADDITIONAL, IMAGE"
+                                "PRIMARY",
+                                "ADDITIONAL",
+                                "IMAGE"
                             ]
                         },
                         "example": "ADDITIONAL"
@@ -3030,7 +3252,8 @@
                         "schema": {
                             "type": "string",
                             "enum": [
-                                "WAREHOUSE, TRANSPORT"
+                                "WAREHOUSE",
+                                "TRANSPORT"
                             ]
                         },
                         "example": "WAREHOUSE"
@@ -3413,7 +3636,8 @@
                         "schema": {
                             "type": "string",
                             "enum": [
-                                "FBR, FBB"
+                                "FBR",
+                                "FBB"
                             ]
                         }
                     },
@@ -3531,7 +3755,9 @@
                         "schema": {
                             "type": "string",
                             "enum": [
-                                "OPEN, UPLOAD_ERROR, ALL"
+                                "OPEN",
+                                "UPLOAD_ERROR",
+                                "ALL"
                             ]
                         },
                         "example": "OPEN"
@@ -3894,15 +4120,7 @@
                             }
                         }
                     }
-                },
-                "deprecated": true,
-                "x-badges": [
-                    {
-                        "name": "DEPRECATED",
-                        "position": "after",
-                        "color": "#f10000"
-                    }
-                ]
+                }
             },
             "post": {
                 "tags": [
@@ -3942,15 +4160,7 @@
                             }
                         }
                     }
-                },
-                "deprecated": true,
-                "x-badges": [
-                    {
-                        "name": "DEPRECATED",
-                        "position": "after",
-                        "color": "#f10000"
-                    }
-                ]
+                }
             }
         },
         "/retailer/subscriptions/signature-keys": {
@@ -3972,15 +4182,7 @@
                             }
                         }
                     }
-                },
-                "deprecated": true,
-                "x-badges": [
-                    {
-                        "name": "DEPRECATED",
-                        "position": "after",
-                        "color": "#f10000"
-                    }
-                ]
+                }
             }
         },
         "/retailer/subscriptions/test/{subscription-id}": {
@@ -4024,15 +4226,7 @@
                             }
                         }
                     }
-                },
-                "deprecated": true,
-                "x-badges": [
-                    {
-                        "name": "DEPRECATED",
-                        "position": "after",
-                        "color": "#f10000"
-                    }
-                ]
+                }
             }
         },
         "/retailer/subscriptions/{subscription-id}": {
@@ -4086,15 +4280,7 @@
                             }
                         }
                     }
-                },
-                "deprecated": true,
-                "x-badges": [
-                    {
-                        "name": "DEPRECATED",
-                        "position": "after",
-                        "color": "#f10000"
-                    }
-                ]
+                }
             },
             "put": {
                 "tags": [
@@ -4146,15 +4332,7 @@
                             }
                         }
                     }
-                },
-                "deprecated": true,
-                "x-badges": [
-                    {
-                        "name": "DEPRECATED",
-                        "position": "after",
-                        "color": "#f10000"
-                    }
-                ]
+                }
             },
             "delete": {
                 "tags": [
@@ -4196,15 +4374,7 @@
                             }
                         }
                     }
-                },
-                "deprecated": true,
-                "x-badges": [
-                    {
-                        "name": "DEPRECATED",
-                        "position": "after",
-                        "color": "#f10000"
-                    }
-                ]
+                }
             }
         },
         "/retailer/transports/{transport-id}": {
@@ -4297,14 +4467,12 @@
                     "host": {
                         "type": "string",
                         "description": "Host identifier describing the server instance that reported the problem.",
-                        "nullable": true,
                         "example": "Instance-001"
                     },
                     "instance": {
                         "type": "string",
                         "description": "Full URI path of the resource that reported the problem.",
                         "format": "uri",
-                        "nullable": true,
                         "example": "https://api.bol.com//retailer/resource"
                     },
                     "violations": {
@@ -4345,14 +4513,12 @@
                     "transporterCode": {
                         "type": "string",
                         "description": "Specify the transporter that carries out the shipment.",
-                        "nullable": true,
                         "example": "TNT"
                     },
                     "trackAndTrace": {
                         "minLength": 1,
                         "type": "string",
                         "description": "The track and trace code that is associated with this transport.",
-                        "nullable": true,
                         "example": "3SBOL0987654321"
                     }
                 },
@@ -4361,10 +4527,16 @@
             "Link": {
                 "type": "object",
                 "properties": {
+                    "rel": {
+                        "type": "string"
+                    },
                     "href": {
                         "type": "string"
                     },
                     "hreflang": {
+                        "type": "string"
+                    },
+                    "media": {
                         "type": "string"
                     },
                     "title": {
@@ -4381,9 +4553,6 @@
                     },
                     "name": {
                         "type": "string"
-                    },
-                    "templated": {
-                        "type": "boolean"
                     }
                 }
             },
@@ -4400,13 +4569,11 @@
                     "processStatusId": {
                         "type": "string",
                         "description": "The process status id.",
-                        "nullable": true,
                         "example": "1234567"
                     },
                     "entityId": {
                         "type": "string",
                         "description": "The id of the object being processed. For example, in case of a shipment process id, you will receive the id of the order item being processed.",
-                        "nullable": true,
                         "example": "987654321"
                     },
                     "eventType": {
@@ -4433,7 +4600,6 @@
                     "errorMessage": {
                         "type": "string",
                         "description": "Shows error message if applicable.",
-                        "nullable": true,
                         "example": "Example process status error message."
                     },
                     "createTimestamp": {
@@ -4497,13 +4663,11 @@
                     "enabled": {
                         "type": "boolean",
                         "description": "Whether the subscription is enabled and will receive notifications or not. Defaults to true.",
-                        "nullable": true,
                         "example": true
                     },
                     "identity": {
                         "type": "string",
                         "description": "Identity needed for publishing a notification. Must be provided if subscriptionType = AWS_SQS and must be in format of AWS ARN",
-                        "nullable": true,
                         "example": "arn:aws:iam::<numeric AWS account id>:role/<role name>"
                     }
                 }
@@ -4519,7 +4683,6 @@
                         "minLength": 1,
                         "type": "string",
                         "description": "The handling result requested by the retailer.",
-                        "nullable": true,
                         "example": "RETURN_RECEIVED",
                         "enum": [
                             "RETURN_RECEIVED",
@@ -4531,12 +4694,11 @@
                         ]
                     },
                     "quantityReturned": {
-                        "maximum": 9223372036854775807,
-                        "minimum": 0,
+                        "maximum": 9999,
+                        "minimum": 1,
                         "type": "integer",
                         "description": "The quantity of items returned.",
                         "format": "int32",
-                        "nullable": true,
                         "example": 1
                     }
                 },
@@ -4575,34 +4737,26 @@
                     "state": {
                         "type": "string",
                         "description": "Update the state of the replenishment to cancel the replenishment.",
-                        "nullable": true,
                         "example": "CANCELLED",
                         "enum": [
                             "CANCELLED"
                         ]
                     },
                     "deliveryInfo": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/UpdateDeliveryInfo"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/UpdateDeliveryInfo"
                     },
                     "numberOfLoadCarriers": {
-                        "maximum": 9223372036854775807,
-                        "minimum": 0,
+                        "maximum": 66,
+                        "minimum": 1,
                         "type": "integer",
                         "description": "The number of parcels in this replenishment. Note: if you are using the bol.com pickup service, the maximum number is 20.",
                         "format": "int32",
-                        "nullable": true,
                         "example": 10
                     },
                     "loadCarriers": {
                         "maxItems": 66,
                         "minItems": 1,
                         "type": "array",
-                        "nullable": true,
                         "items": {
                             "$ref": "#/components/schemas/UpdateLoadCarrier"
                         }
@@ -4646,7 +4800,18 @@
                         "description": "The code representing the reason for cancellation of this item.",
                         "example": "BAD_CONDITION",
                         "enum": [
-                            "OUT_OF_STOCK, REQUESTED_BY_CUSTOMER, BAD_CONDITION, HIGHER_SHIPCOST, INCORRECT_PRICE, NOT_AVAIL_IN_TIME, NO_BOL_GUARANTEE, ORDERED_TWICE, RETAIN_ITEM, TECH_ISSUE, UNFINDABLE_ITEM, OTHER"
+                            "OUT_OF_STOCK",
+                            "REQUESTED_BY_CUSTOMER",
+                            "BAD_CONDITION",
+                            "HIGHER_SHIPCOST",
+                            "INCORRECT_PRICE",
+                            "NOT_AVAIL_IN_TIME",
+                            "NO_BOL_GUARANTEE",
+                            "ORDERED_TWICE",
+                            "RETAIN_ITEM",
+                            "TECH_ISSUE",
+                            "UNFINDABLE_ITEM",
+                            "OTHER"
                         ]
                     }
                 },
@@ -4662,7 +4827,6 @@
                         "minLength": 1,
                         "type": "string",
                         "description": "The fulfilment method. Fulfilled by the retailer (FBR) or fulfilled by bol.com (FBB).",
-                        "nullable": true,
                         "example": "FBR",
                         "enum": [
                             "FBR",
@@ -4672,7 +4836,6 @@
                     "deliveryCode": {
                         "type": "string",
                         "description": "The delivery promise that applies to this offer. This value will only be used in combination with fulfilmentMethod 'FBR'.",
-                        "nullable": true,
                         "enum": [
                             "24uurs-23",
                             "24uurs-22",
@@ -4694,12 +4857,6 @@
                             "MijnLeverbelofte",
                             "VVB"
                         ]
-                    },
-                    "profileId": {
-                        "type": "string",
-                        "description": "Profile ID reference used for custom fulfillment options.",
-                        "nullable": true,
-                        "example": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
                     }
                 }
             },
@@ -4712,7 +4869,6 @@
                     "economicOperatorId": {
                         "type": "string",
                         "description": "An identifier referring to the Economic operator entity (manufacturer, authorized party, importer, distributor or other natural person or legal entity for whom the obligations apply with regards to the manufacturing, or making available on the market of the product in line with the applicable EU laws).",
-                        "nullable": true,
                         "example": "90bfddc5-a6d0-4986-9253-407b3a6850ca"
                     },
                     "reference": {
@@ -4720,7 +4876,6 @@
                         "minLength": 0,
                         "type": "string",
                         "description": "A user-defined reference that helps you identify this particular offer when receiving data from us. This element can optionally be left empty and has a maximum amount of 100 characters.",
-                        "nullable": true,
                         "example": "REF12345"
                     },
                     "onHoldByRetailer": {
@@ -4734,16 +4889,10 @@
                         "minLength": 0,
                         "type": "string",
                         "description": "In case the item is not known to bol.com you can use this field to identify this particular product. Note: in case the product is known to bol.com, the unknown product title will not be stored.",
-                        "nullable": true,
                         "example": "Unknown Product Title"
                     },
                     "fulfilment": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/Fulfilment"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/Fulfilment"
                     }
                 }
             },
@@ -4755,18 +4904,16 @@
                 "type": "object",
                 "properties": {
                     "amount": {
-                        "maximum": 9223372036854775807,
+                        "maximum": 999,
                         "minimum": 0,
                         "type": "integer",
                         "description": "The amount of stock available for the specified product present in the retailers warehouse. Note: this should not be the FBB stock! Defaults to 0.",
                         "format": "int32",
-                        "nullable": true,
                         "example": 6
                     },
                     "managedByRetailer": {
                         "type": "boolean",
                         "description": "Configures whether the retailer manages the stock levels or that bol.com should calculate the corrected stock based on actual open orders. In case the configuration is set to 'false', all open orders are used to calculate the corrected stock. In case the configuration is set to 'true', only orders that are placed after the last offer update are taken into account.",
-                        "nullable": true,
                         "example": false
                     }
                 }
@@ -4779,20 +4926,18 @@
                 "type": "object",
                 "properties": {
                     "quantity": {
-                        "maximum": 9223372036854775807,
-                        "minimum": 0,
+                        "maximum": 24,
+                        "minimum": 1,
                         "type": "integer",
                         "description": "The minimum quantity a customer must order in order to receive discount. The element with value 1 must at least be present. In case of using more elements, the respective quantities must be in increasing order.",
                         "format": "int32",
-                        "nullable": true,
                         "example": 1
                     },
                     "unitPrice": {
-                        "maximum": 9223372036854775807,
-                        "minimum": 0,
+                        "maximum": 9999,
+                        "minimum": 1,
                         "type": "number",
                         "description": "The price per single unit including VAT in case the customer orders at least the quantity provided. When using more than 1 price, the respective prices must be in decreasing order using 2 decimal precision and dot separated.",
-                        "nullable": true,
                         "example": 9.99
                     }
                 },
@@ -4822,12 +4967,7 @@
                 "type": "object",
                 "properties": {
                     "pricing": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/Pricing"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/Pricing"
                     }
                 }
             },
@@ -4844,12 +4984,9 @@
                         "example": "2012345678"
                     },
                     "quantity": {
-                        "minimum": 0,
-                        "exclusiveMinimum": true,
                         "type": "integer",
                         "description": "The quantity of the order item for which the shipping label creation is requested for. If omitted, will be interpreted as the full quantity that is still open for this order item.",
                         "format": "int32",
-                        "nullable": true,
                         "example": 1
                     }
                 },
@@ -4922,7 +5059,6 @@
                         "type": "string",
                         "description": "The date until the delivery option (incl total price) is valid.",
                         "format": "date",
-                        "nullable": true,
                         "example": "2020-01-12"
                     },
                     "transporterCode": {
@@ -4952,12 +5088,7 @@
                         "$ref": "#/components/schemas/PackageRestrictions"
                     },
                     "handoverDetails": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/HandoverDetails"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/HandoverDetails"
                     }
                 },
                 "description": "A delivery option shows how and the costs of a transport for a shippable configuration"
@@ -4983,27 +5114,23 @@
                     "meetsCustomerExpectation": {
                         "type": "boolean",
                         "description": "Indicates if you can use this label without receiving a strike if you handover before the latestHandoverDateTime. If this field is 'false' you can still buy and use this label but it will have negative consequences on your performance score because the order will be delivered too early or too late.",
-                        "nullable": true,
                         "example": true
                     },
                     "earliestHandoverDateTime": {
                         "type": "string",
                         "description": "The date and time at which the parcel can be earliest  at the transporter to make sure your parcel is delivered on time.",
                         "format": "date-time",
-                        "nullable": true,
                         "example": "2018-04-19T00:00:00+02:00"
                     },
                     "latestHandoverDateTime": {
                         "type": "string",
                         "description": "The date and time at which the parcel must ultimately be at the transporter to make sure your parcel is delivered on time. If you handover after this date you will receive a strike because you order will be delivered too late.",
                         "format": "date-time",
-                        "nullable": true,
                         "example": "2018-04-19T19:00:00+02:00"
                     },
                     "collectionMethod": {
                         "type": "string",
                         "description": "The type of collection for this parcel.",
-                        "nullable": true,
                         "example": "DROP_OFF",
                         "enum": [
                             "DROP_OFF",
@@ -5057,12 +5184,9 @@
                         "example": "2012345678"
                     },
                     "quantity": {
-                        "minimum": 0,
-                        "exclusiveMinimum": true,
                         "type": "integer",
                         "description": "The quantity of the order items to ship. If omitted, will be interpreted as the full quantity that is still open for this order item.",
                         "format": "int32",
-                        "nullable": true,
                         "example": 1
                     }
                 },
@@ -5088,22 +5212,15 @@
                         "minLength": 0,
                         "type": "string",
                         "description": "A user-defined reference that you can provide to add to the shipment. Can be used for own administration purposes. Only 'null' or non-empty strings accepted.",
-                        "nullable": true,
                         "example": "B321SR"
                     },
                     "shippingLabelId": {
                         "type": "string",
                         "description": "The identifier of the purchased shipping label.",
-                        "nullable": true,
                         "example": "d4c50077-0c19-435f-9bee-1b30b9f4ba1a"
                     },
                     "transport": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/TransportInstruction"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/TransportInstruction"
                     }
                 }
             },
@@ -5121,7 +5238,6 @@
                     "trackAndTrace": {
                         "type": "string",
                         "description": "The track and trace code that is associated with this transport.",
-                        "nullable": true,
                         "example": "3SBOL0987654321"
                     }
                 }
@@ -5140,8 +5256,8 @@
                         "example": "2012345678"
                     },
                     "quantityReturned": {
-                        "maximum": 9223372036854775807,
-                        "minimum": 0,
+                        "maximum": 9999,
+                        "minimum": 1,
                         "type": "integer",
                         "description": "The quantity of items returned.",
                         "format": "int32",
@@ -5193,7 +5309,6 @@
                     "houseNumberExtension": {
                         "type": "string",
                         "description": "The extension of the house number.",
-                        "nullable": true,
                         "example": "B"
                     },
                     "city": {
@@ -5233,7 +5348,12 @@
                         "description": "The transporter code that correlates to the transport used for this replenishment.",
                         "example": "POSTNL",
                         "enum": [
-                            "POSTNL, DHL, DPD, GLS, UPS, OTHER"
+                            "POSTNL",
+                            "DHL",
+                            "DPD",
+                            "GLS",
+                            "UPS",
+                            "OTHER"
                         ]
                     }
                 }
@@ -5254,7 +5374,6 @@
                     "commentToTransporter": {
                         "type": "string",
                         "description": "A comment to the transporter regarding the pickup appointment.",
-                        "nullable": true,
                         "example": "Eerste verdieping."
                     }
                 }
@@ -5291,8 +5410,8 @@
                         "example": "0000007740404"
                     },
                     "quantity": {
-                        "maximum": 9223372036854775807,
-                        "minimum": 0,
+                        "maximum": 9999,
+                        "minimum": 1,
                         "type": "integer",
                         "description": "The number of announced items.",
                         "format": "int32",
@@ -5315,12 +5434,7 @@
                         "example": "REFERENCE1"
                     },
                     "deliveryInfo": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/CreateDeliveryInfo"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/CreateDeliveryInfo"
                     },
                     "labelingByBol": {
                         "type": "boolean",
@@ -5328,20 +5442,15 @@
                         "example": false
                     },
                     "numberOfLoadCarriers": {
-                        "maximum": 9223372036854775807,
-                        "minimum": 0,
+                        "maximum": 66,
+                        "minimum": 1,
                         "type": "integer",
                         "description": "The number of parcels in this replenishment. Note: if you are using the bol.com pickup service, the maximum number is 20.",
                         "format": "int32",
                         "example": 10
                     },
                     "pickupAppointment": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/CreatePickupAppointment"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/CreatePickupAppointment"
                     },
                     "lines": {
                         "maxItems": 9999,
@@ -5366,8 +5475,8 @@
                         "example": "0000007740404"
                     },
                     "quantity": {
-                        "maximum": 9223372036854775807,
-                        "minimum": 0,
+                        "maximum": 9999,
+                        "minimum": 1,
                         "type": "integer",
                         "description": "The number of products to generate labels for.",
                         "format": "int32",
@@ -5387,7 +5496,12 @@
                         "description": "The printer format to create labels for.",
                         "example": "AVERY_J8159",
                         "enum": [
-                            "AVERY_J8159, AVERY_J8160, AVERY_3474, DYMO_99012, BROTHER_DK11208D, ZEBRA_Z_PERFORM_1000T"
+                            "AVERY_J8159",
+                            "AVERY_J8160",
+                            "AVERY_3474",
+                            "DYMO_99012",
+                            "BROTHER_DK11208D",
+                            "ZEBRA_Z_PERFORM_1000T"
                         ]
                     },
                     "products": {
@@ -5454,7 +5568,6 @@
                     "houseNumberExtension": {
                         "type": "string",
                         "description": "The extension of the house number.",
-                        "nullable": true,
                         "example": "B"
                     },
                     "zipCode": {
@@ -5489,8 +5602,8 @@
                         "$ref": "#/components/schemas/PickupTimeSlotsAddress"
                     },
                     "numberOfLoadCarriers": {
-                        "maximum": 9223372036854775807,
-                        "minimum": 0,
+                        "maximum": 50,
+                        "minimum": 1,
                         "type": "integer",
                         "description": "The number of load carriers in this shipment.",
                         "format": "int32",
@@ -5524,7 +5637,6 @@
                 "properties": {
                     "timeSlots": {
                         "type": "array",
-                        "nullable": true,
                         "items": {
                             "$ref": "#/components/schemas/PickupTimeSlot"
                         }
@@ -5572,12 +5684,14 @@
                 "description": "The list of filter values in this filter."
             },
             "ProductListRequest": {
+                "required": [
+                    "page"
+                ],
                 "type": "object",
                 "properties": {
                     "countryCode": {
                         "type": "string",
                         "description": "The country for which the products will be retrieved.",
-                        "nullable": true,
                         "example": "NL",
                         "default": "NL",
                         "enum": [
@@ -5590,7 +5704,6 @@
                         "minLength": 1,
                         "type": "string",
                         "description": "The search term to get the associated products for.",
-                        "nullable": true,
                         "example": "laptop"
                     },
                     "categoryId": {
@@ -5598,7 +5711,6 @@
                         "minLength": 1,
                         "type": "string",
                         "description": "The category to get the associated products for.",
-                        "nullable": true,
                         "example": "4770"
                     },
                     "filterRanges": {
@@ -5606,7 +5718,6 @@
                         "minItems": 0,
                         "type": "array",
                         "description": "The list of range filters to get associated products for.",
-                        "nullable": true,
                         "items": {
                             "$ref": "#/components/schemas/ProductListFilterRange"
                         }
@@ -5616,7 +5727,6 @@
                         "minItems": 0,
                         "type": "array",
                         "description": "The list of filter values in this filter.",
-                        "nullable": true,
                         "items": {
                             "$ref": "#/components/schemas/ProductListFilterValue"
                         }
@@ -5624,7 +5734,6 @@
                     "sort": {
                         "type": "string",
                         "description": "Determines the order of the products.",
-                        "nullable": true,
                         "enum": [
                             "RELEVANCE",
                             "POPULARITY",
@@ -5636,8 +5745,8 @@
                         ]
                     },
                     "page": {
-                        "maximum": 9223372036854775807,
-                        "minimum": 0,
+                        "maximum": 200,
+                        "minimum": 1,
                         "type": "integer",
                         "description": "The requested page number with a page size of 50 items.",
                         "format": "int32",
@@ -5719,7 +5828,6 @@
                         "minLength": 1,
                         "type": "string",
                         "description": "The condition of the offered product.",
-                        "nullable": true,
                         "example": "AS_NEW",
                         "enum": [
                             "NEW",
@@ -5732,7 +5840,6 @@
                     "category": {
                         "type": "string",
                         "description": "The category of the condition. If not given NEW or SECONDHAND is derived from NAME.",
-                        "nullable": true,
                         "example": "SECONDHAND",
                         "enum": [
                             "NEW",
@@ -5744,7 +5851,6 @@
                         "minLength": 0,
                         "type": "string",
                         "description": "The description of the condition of the product. Only allowed if name is not NEW and may not contain e-mail addresses.",
-                        "nullable": true,
                         "example": "Heeft een koffie vlek op de kaft."
                     }
                 }
@@ -5763,29 +5869,21 @@
                         "minLength": 1,
                         "type": "string",
                         "description": "The EAN number associated with this product. Note: in case an ISBN is provided, the ISBN will be replaced with the actual EAN belonging to this ISBN.",
-                        "nullable": true,
                         "example": "0000007740404"
                     },
                     "economicOperatorId": {
                         "type": "string",
                         "description": "An identifier referring to the Economic operator entity (manufacturer, authorized party, importer, distributor or other natural person or legal entity for whom the obligations apply with regards to the manufacturing, or making available on the market of the product in line with the applicable EU laws).",
-                        "nullable": true,
                         "example": "90bfddc5-a6d0-4986-9253-407b3a6850ca"
                     },
                     "condition": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/Condition"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/Condition"
                     },
                     "reference": {
                         "maxLength": 100,
                         "minLength": 0,
                         "type": "string",
                         "description": "A user-defined reference that helps you identify this particular offer when receiving data from us. This element can optionally be left empty and has a maximum amount of 100 characters.",
-                        "nullable": true,
                         "example": "REF12345"
                     },
                     "onHoldByRetailer": {
@@ -5799,32 +5897,16 @@
                         "minLength": 0,
                         "type": "string",
                         "description": "In case the item is not known to bol.com you can use this field to identify this particular product. Note: in case the product is known to bol.com, the unknown product title will not be stored.",
-                        "nullable": true,
                         "example": "Unknown Product Title"
                     },
                     "pricing": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/Pricing"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/Pricing"
                     },
                     "stock": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/StockCreate"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/StockCreate"
                     },
                     "fulfilment": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/Fulfilment"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/Fulfilment"
                     }
                 }
             },
@@ -5836,18 +5918,16 @@
                 "type": "object",
                 "properties": {
                     "amount": {
-                        "maximum": 9223372036854775807,
+                        "maximum": 999,
                         "minimum": 0,
                         "type": "integer",
                         "description": "The amount of stock available for the specified product present in the retailers warehouse. Note: this should not be the FBB stock! Defaults to 0.",
                         "format": "int32",
-                        "nullable": true,
                         "example": 6
                     },
                     "managedByRetailer": {
                         "type": "boolean",
                         "description": "Configures whether the retailer manages the stock levels or that bol.com should calculate the corrected stock based on actual open orders. In case the configuration is set to 'false', all open orders are used to calculate the corrected stock. In case the configuration is set to 'true', only orders that are placed after the last offer update are taken into account.",
-                        "nullable": true,
                         "example": false
                     }
                 }
@@ -5883,6 +5963,234 @@
                         "enum": [
                             "CSV"
                         ]
+                    }
+                }
+            },
+            "Asset": {
+                "required": [
+                    "labels",
+                    "url"
+                ],
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "description": "The URL of the asset.",
+                        "example": "http://example.com"
+                    },
+                    "labels": {
+                        "maxItems": 2,
+                        "minItems": 1,
+                        "type": "array",
+                        "description": "The label(s) of the asset.",
+                        "example": [
+                            "FRONT"
+                        ],
+                        "items": {
+                            "type": "string",
+                            "description": "The label(s) of the asset.",
+                            "example": "[\"FRONT\"]"
+                        }
+                    }
+                }
+            },
+            "Attribute": {
+                "required": [
+                    "id",
+                    "values"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "maxLength": 100,
+                        "minLength": 1,
+                        "type": "string",
+                        "description": "The identifier of the attribute for which the value has changed.",
+                        "example": "Width"
+                    },
+                    "values": {
+                        "maxItems": 300,
+                        "minItems": 1,
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AttributeValue"
+                        }
+                    }
+                },
+                "description": "A list of attributes. Every content update request should have one \"EAN\" attribute to link changes to a proper product."
+            },
+            "AttributeValue": {
+                "required": [
+                    "unitId",
+                    "value"
+                ],
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "maxLength": 10000,
+                        "minLength": 1,
+                        "type": "string",
+                        "description": "The value of the attribute.",
+                        "example": "14.5"
+                    },
+                    "unitId": {
+                        "type": "string",
+                        "description": "The unit identifier of the attribute.",
+                        "example": "mm"
+                    }
+                }
+            },
+            "CreateProductContentSingleRequest": {
+                "required": [
+                    "attributes",
+                    "language"
+                ],
+                "type": "object",
+                "properties": {
+                    "language": {
+                        "minLength": 1,
+                        "type": "string",
+                        "description": "The language in which content is submitted.",
+                        "example": "nl",
+                        "enum": [
+                            "nl",
+                            "nl-BE",
+                            "fr",
+                            "fr-BE"
+                        ]
+                    },
+                    "attributes": {
+                        "maxItems": 150,
+                        "minItems": 1,
+                        "type": "array",
+                        "description": "A list of attributes. Every content update request should have one \"EAN\" attribute to link changes to a proper product.",
+                        "items": {
+                            "$ref": "#/components/schemas/Attribute"
+                        }
+                    },
+                    "assets": {
+                        "maxItems": 30,
+                        "minItems": 0,
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Asset"
+                        }
+                    }
+                }
+            },
+            "ChunkRecommendationsAttribute": {
+                "required": [
+                    "id",
+                    "values"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "minLength": 1,
+                        "type": "string",
+                        "description": "The identifier of the attribute.",
+                        "example": "Name"
+                    },
+                    "values": {
+                        "maxItems": 1,
+                        "minItems": 1,
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ChunkRecommendationsValue"
+                        }
+                    }
+                }
+            },
+            "ChunkRecommendationsAttributes": {
+                "required": [
+                    "attributes"
+                ],
+                "type": "object",
+                "properties": {
+                    "attributes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ChunkRecommendationsAttribute"
+                        }
+                    }
+                }
+            },
+            "ChunkRecommendationsRequest": {
+                "required": [
+                    "productContents"
+                ],
+                "type": "object",
+                "properties": {
+                    "productContents": {
+                        "maxItems": 1,
+                        "minItems": 1,
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ChunkRecommendationsAttributes"
+                        }
+                    }
+                }
+            },
+            "ChunkRecommendationsValue": {
+                "required": [
+                    "value"
+                ],
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "maxLength": 10000,
+                        "minLength": 1,
+                        "type": "string",
+                        "description": "The value of the attribute.",
+                        "example": "Bananas"
+                    }
+                }
+            },
+            "ChunkRecommendationsPrediction": {
+                "required": [
+                    "chunkId",
+                    "probability"
+                ],
+                "type": "object",
+                "properties": {
+                    "chunkId": {
+                        "type": "string",
+                        "description": "The identifier of the predicted GPC/Product Classification.",
+                        "example": "80007268"
+                    },
+                    "probability": {
+                        "type": "number",
+                        "description": "The probability of the predicted chunk as a ratio, with eleven decimals of precision.",
+                        "format": "double",
+                        "example": 0.120168649
+                    }
+                }
+            },
+            "ChunkRecommendationsPredictions": {
+                "required": [
+                    "predictions"
+                ],
+                "type": "object",
+                "properties": {
+                    "predictions": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ChunkRecommendationsPrediction"
+                        }
+                    }
+                }
+            },
+            "ChunkRecommendationsResponse": {
+                "required": [
+                    "recommendations"
+                ],
+                "type": "object",
+                "properties": {
+                    "recommendations": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ChunkRecommendationsPredictions"
+                        }
                     }
                 }
             },
@@ -6043,7 +6351,6 @@
                     "upper": {
                         "type": "number",
                         "description": "The exclusive upper price threshold for which the commission is valid.",
-                        "nullable": true,
                         "example": 10
                     }
                 },
@@ -6113,7 +6420,6 @@
                     "condition": {
                         "type": "string",
                         "description": "The condition of the offer.",
-                        "nullable": true,
                         "example": "NEW",
                         "enum": [
                             "NEW",
@@ -6177,13 +6483,11 @@
                     "ean": {
                         "type": "string",
                         "description": "The EAN number associated with this product.",
-                        "nullable": true,
                         "example": "0000007740404"
                     },
                     "condition": {
                         "type": "string",
                         "description": "The condition of the offer.",
-                        "nullable": true,
                         "example": "NEW"
                     },
                     "unitPrice": {
@@ -6209,7 +6513,6 @@
                     "totalCostWithoutReduction": {
                         "type": "number",
                         "description": "The total commission for selling this product at bol.com without reductions including VAT.",
-                        "nullable": true,
                         "example": 9.84
                     },
                     "reductions": {
@@ -6303,13 +6606,11 @@
                     "enabled": {
                         "type": "boolean",
                         "description": "Whether the subscription is enabled and will receive notifications or not. Defaults to true.",
-                        "nullable": true,
                         "example": true
                     },
                     "identity": {
                         "type": "string",
                         "description": "Identity needed for publishing a notification. Must be provided if subscriptionType = AWS_SQS and must be in format of AWS ARN.",
-                        "nullable": true,
                         "example": "arn:aws:iam::<numeric AWS account id>:role/<role name>"
                     }
                 }
@@ -6389,7 +6690,6 @@
                         "type": "string",
                         "description": "The date and time in ISO 8601 format when the order item was shipped.",
                         "format": "date-time",
-                        "nullable": true,
                         "example": "2018-04-17T10:55:37+02:00"
                     },
                     "shipmentReference": {
@@ -6445,7 +6745,6 @@
                         "type": "string",
                         "description": "The date and time in ISO 8601 format when the order was placed.",
                         "format": "date-time",
-                        "nullable": true,
                         "example": "2018-04-17T10:55:37+02:00"
                     }
                 }
@@ -6524,13 +6823,11 @@
                     "houseNumberExtension": {
                         "type": "string",
                         "description": "The extension on the house number.",
-                        "nullable": true,
                         "example": "B"
                     },
                     "extraAddressInformation": {
                         "type": "string",
                         "description": "Additional information related to the address that helps in delivering the package.",
-                        "nullable": true,
                         "example": "Apartment"
                     },
                     "zipCode": {
@@ -6556,25 +6853,21 @@
                     "company": {
                         "type": "string",
                         "description": "The company name.",
-                        "nullable": true,
                         "example": "bol.com"
                     },
                     "vatNumber": {
                         "type": "string",
                         "description": "The Value Added Tax (VAT) / BTW number for business sellers situated in the Netherlands.",
-                        "nullable": true,
                         "example": "NL999999999B99"
                     },
                     "kvkNumber": {
                         "type": "string",
                         "description": "The Kamer van Koophandel (kvk) number for organizations situated in the Netherlands or ondernemingsnummer for organizations situated in Belgium.",
-                        "nullable": true,
                         "example": "99887766"
                     },
                     "orderReference": {
                         "type": "string",
                         "description": "The order reference specified by the customer when ordering a product.",
-                        "nullable": true,
                         "example": "MijnReferentie"
                     }
                 },
@@ -6586,13 +6879,11 @@
                     "offerId": {
                         "type": "string",
                         "description": "Unique identifier for an offer.",
-                        "nullable": true,
                         "example": "6ff736b5-cdd0-4150-8c67-78269ee986f5"
                     },
                     "reference": {
                         "type": "string",
                         "description": "A user-defined reference that helps you identify this particular offer when receiving data from us. This element can optionally be left empty and has a maximum amount of 100 characters.",
-                        "nullable": true,
                         "example": "BOLCOM00123"
                     }
                 }
@@ -6634,7 +6925,6 @@
                         "type": "string",
                         "description": "The date and time in ISO 8601 format when the order item was shipped.",
                         "format": "date-time",
-                        "nullable": true,
                         "example": "2018-04-17T10:55:37+02:00"
                     },
                     "shipmentReference": {
@@ -6645,27 +6935,16 @@
                     "pickupPoint": {
                         "type": "boolean",
                         "description": "Indicates whether this order is shipped to a Pick Up Point.",
-                        "nullable": true,
                         "example": true
                     },
                     "order": {
                         "$ref": "#/components/schemas/ShipmentOrder"
                     },
                     "shipmentDetails": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/ShipmentDetails"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/ShipmentDetails"
                     },
                     "billingDetails": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/BillingDetails"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/BillingDetails"
                     },
                     "shipmentItems": {
                         "type": "array",
@@ -6674,12 +6953,7 @@
                         }
                     },
                     "transport": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/ShipmentTransport"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/ShipmentTransport"
                     }
                 }
             },
@@ -6699,7 +6973,6 @@
                     "pickupPointName": {
                         "type": "string",
                         "description": "The name of Pick Up Point location this order needs to be shipped to.",
-                        "nullable": true,
                         "example": "Albert Heijn: UTRECHT"
                     },
                     "salutation": {
@@ -6735,13 +7008,11 @@
                     "houseNumberExtension": {
                         "type": "string",
                         "description": "The extension on the house number.",
-                        "nullable": true,
                         "example": "B"
                     },
                     "extraAddressInformation": {
                         "type": "string",
                         "description": "Additional information related to the address that helps in delivering the package.",
-                        "nullable": true,
                         "example": "Apartment"
                     },
                     "zipCode": {
@@ -6762,28 +7033,27 @@
                     "email": {
                         "type": "string",
                         "description": "A scrambled email address that can be used to contact the customer.",
-                        "nullable": true,
                         "example": "billie@verkopen.bol.com"
                     },
                     "company": {
                         "type": "string",
                         "description": "The company name.",
-                        "nullable": true,
                         "example": "bol.com"
                     },
                     "deliveryPhoneNumber": {
                         "type": "string",
                         "description": "The delivery phone number of the customer. Filled in case the order requires an appointment for delivering the goods.",
-                        "nullable": true,
                         "example": "012123456"
                     },
                     "language": {
                         "type": "string",
                         "description": "The language of the customer in case of contact.",
-                        "nullable": true,
                         "example": "nl",
                         "enum": [
-                            "nl, nl-BE, fr, fr-BE"
+                            "nl",
+                            "nl-BE",
+                            "fr",
+                            "fr-BE"
                         ]
                     }
                 },
@@ -6807,7 +7077,6 @@
                     "distributionParty": {
                         "type": "string",
                         "description": "The party that manages the distribution, either bol.com or the retailer itself.",
-                        "nullable": true,
                         "example": "RETAILER",
                         "enum": [
                             "RETAILER",
@@ -6818,7 +7087,6 @@
                         "type": "string",
                         "description": "The ultimate delivery date at which this order must be delivered at the customer's shipping address. This field is empty in case the exactDeliveryDate is filled.",
                         "format": "date",
-                        "nullable": true,
                         "example": "2017-02-10"
                     }
                 }
@@ -6837,28 +7105,13 @@
                         "example": "1234567891"
                     },
                     "fulfilment": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/ShipmentFulfilment"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/ShipmentFulfilment"
                     },
                     "offer": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/OrderOffer"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/OrderOffer"
                     },
                     "product": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/OrderProduct"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/OrderProduct"
                     },
                     "quantity": {
                         "type": "integer",
@@ -6870,7 +7123,6 @@
                         "type": "integer",
                         "description": "Amount of shipped products for this order item id.",
                         "format": "int32",
-                        "nullable": true,
                         "example": 10
                     },
                     "unitPrice": {
@@ -6881,7 +7133,6 @@
                     "commission": {
                         "type": "number",
                         "description": "The commission.",
-                        "nullable": true,
                         "example": 5
                     }
                 }
@@ -6901,7 +7152,6 @@
                         "type": "string",
                         "description": "The date and time in ISO 8601 format when the order was placed.",
                         "format": "date-time",
-                        "nullable": true,
                         "example": "2018-04-17T10:55:37+02:00"
                     }
                 }
@@ -6912,30 +7162,25 @@
                     "transportId": {
                         "type": "string",
                         "description": "The transport id.",
-                        "nullable": true,
                         "example": "312778947"
                     },
                     "transporterCode": {
                         "type": "string",
                         "description": "Specify the transporter that will carry out the shipment.",
-                        "nullable": true,
                         "example": "TNT"
                     },
                     "trackAndTrace": {
                         "type": "string",
                         "description": "The track and trace code that is associated with this transport.",
-                        "nullable": true,
                         "example": "3SBOL0987654321"
                     },
                     "shippingLabelId": {
                         "type": "string",
                         "description": "The shipping label id.",
-                        "nullable": true,
                         "example": "123456789"
                     },
                     "transportEvents": {
                         "type": "array",
-                        "nullable": true,
                         "items": {
                             "$ref": "#/components/schemas/TransportEvent"
                         }
@@ -6954,7 +7199,15 @@
                         "description": "The transport event code indicates the location of the parcel within the distribution process.",
                         "example": "AT_TRANSPORTER",
                         "enum": [
-                            "PRE_ANNOUNCED, AT_TRANSPORTER, IN_TRANSIT, DELIVERED_AT_NEIGHBOURS, DELIVERED_AT_CUSTOMER, PICKED_UP_AT_PICK_UP_POINT, AT_PICK_UP_POINT, RETURNED_TO_SENDER, INBOUND_COLLECT"
+                            "PRE_ANNOUNCED",
+                            "AT_TRANSPORTER",
+                            "IN_TRANSIT",
+                            "DELIVERED_AT_NEIGHBOURS",
+                            "DELIVERED_AT_CUSTOMER",
+                            "PICKED_UP_AT_PICK_UP_POINT",
+                            "AT_PICK_UP_POINT",
+                            "RETURNED_TO_SENDER",
+                            "INBOUND_COLLECT"
                         ]
                     },
                     "eventDateTime": {
@@ -6981,26 +7234,18 @@
                     "orderId": {
                         "type": "string",
                         "description": "The id of the order associated with this shipment.",
-                        "nullable": true,
                         "example": "4691862037"
                     },
                     "customerAccountNumber": {
                         "type": "string",
                         "description": "The account of the customer within bol.com associated with this shipment.",
-                        "nullable": true,
                         "example": "3004850316"
                     },
                     "billingDetails": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/InvoiceRequestsBillingDetails"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/InvoiceRequestsBillingDetails"
                     },
                     "products": {
                         "type": "array",
-                        "nullable": true,
                         "items": {
                             "$ref": "#/components/schemas/InvoiceRequestsProducts"
                         }
@@ -7037,67 +7282,56 @@
                     "firstName": {
                         "type": "string",
                         "description": "The first name of the customer.",
-                        "nullable": true,
                         "example": "Billie"
                     },
                     "surname": {
                         "type": "string",
                         "description": "The surname of the customer.",
-                        "nullable": true,
                         "example": "Jansen"
                     },
                     "streetName": {
                         "type": "string",
                         "description": "The street name.",
-                        "nullable": true,
                         "example": "Dorpstraat"
                     },
                     "houseNumber": {
                         "type": "string",
                         "description": "The house number.",
-                        "nullable": true,
                         "example": "1"
                     },
                     "houseNumberExtension": {
                         "type": "string",
                         "description": "The extension on the house number.",
-                        "nullable": true,
                         "example": "B"
                     },
                     "zipCode": {
                         "type": "string",
                         "description": "The ZIP code in '1234AB' format for NL orders and '0000' format for BE orders.",
-                        "nullable": true,
                         "example": "1111ZZ"
                     },
                     "city": {
                         "type": "string",
                         "description": "The name of the city.",
-                        "nullable": true,
                         "example": "Utrecht"
                     },
                     "countryCode": {
                         "type": "string",
                         "description": "The country code.",
-                        "nullable": true,
                         "example": "NL"
                     },
                     "company": {
                         "type": "string",
                         "description": "The company name.",
-                        "nullable": true,
                         "example": "bol.com"
                     },
                     "vatNumber": {
                         "type": "string",
                         "description": "The Value Added Tax (VAT) / BTW number for business sellers situated in the Netherlands.",
-                        "nullable": true,
                         "example": "NL999999999B99"
                     },
                     "kvkNumber": {
                         "type": "string",
                         "description": "The Kamer van Koophandel (KvK) number for organizations situated in the Netherlands or ondernemingsnummer for organizations situated in Belgium.",
-                        "nullable": true,
                         "example": "99887766"
                     }
                 },
@@ -7109,19 +7343,16 @@
                     "description": {
                         "type": "string",
                         "description": "The description of the ordered product.",
-                        "nullable": true,
                         "example": "Eucerin Hyaluron-filler"
                     },
                     "quantity": {
                         "type": "integer",
                         "description": "Amount of the product being ordered.",
-                        "format": "int32",
-                        "nullable": true
+                        "format": "int32"
                     },
                     "unitPrice": {
                         "type": "number",
                         "description": "The selling price to the customer of a single unit including VAT.",
-                        "nullable": true,
                         "example": 10
                     }
                 }
@@ -7297,7 +7528,6 @@
                     "detailedReason": {
                         "type": "string",
                         "description": "The sub reason describing why the customer returned this product in more detail.",
-                        "nullable": true,
                         "example": "Niet naar verwachting"
                     },
                     "customerComments": {
@@ -7341,79 +7571,66 @@
                     "firstName": {
                         "type": "string",
                         "description": "The first name of the customer.",
-                        "nullable": true,
                         "example": "Billie"
                     },
                     "surname": {
                         "type": "string",
                         "description": "The surname of the customer.",
-                        "nullable": true,
                         "example": "Jansen"
                     },
                     "streetName": {
                         "type": "string",
                         "description": "The street name.",
-                        "nullable": true,
                         "example": "Dorpstraat"
                     },
                     "houseNumber": {
                         "type": "string",
                         "description": "The house number.",
-                        "nullable": true,
                         "example": "1"
                     },
                     "houseNumberExtension": {
                         "type": "string",
                         "description": "The extension on the house number.",
-                        "nullable": true,
                         "example": "B"
                     },
                     "extraAddressInformation": {
                         "type": "string",
                         "description": "Additional information related to the address that helps in delivering the package.",
-                        "nullable": true,
                         "example": "Apartment"
                     },
                     "zipCode": {
                         "type": "string",
                         "description": "The ZIP code in '1234AB' format for NL orders and '0000' format for BE orders.",
-                        "nullable": true,
                         "example": "1111ZZ"
                     },
                     "city": {
                         "type": "string",
                         "description": "The name of the city.",
-                        "nullable": true,
                         "example": "Utrecht"
                     },
                     "countryCode": {
                         "type": "string",
                         "description": "The country code.",
-                        "nullable": true,
                         "example": "NL"
                     },
                     "email": {
                         "type": "string",
                         "description": "A scrambled email address that can be used to contact the customer.",
-                        "nullable": true,
                         "example": "billie@verkopen.bol.com"
                     },
                     "deliveryPhoneNumber": {
                         "type": "string",
                         "description": "The delivery phone number of the customer. Filled in case the order requires an appointment for delivering the goods.",
-                        "nullable": true,
                         "example": "012123456"
                     },
                     "company": {
                         "type": "string",
                         "description": "The company name.",
-                        "nullable": true,
                         "example": "bol.com"
                     },
                     "vatNumber": {
                         "type": "string",
                         "description": "The Value Added Tax (VAT) / BTW number for business sellers situated in the Netherlands.",
-                        "nullable": true,
                         "example": "NL999999999B99"
                     }
                 },
@@ -7498,13 +7715,11 @@
                     "trackAndTrace": {
                         "type": "string",
                         "description": "The track and trace code that is associated with this transport.",
-                        "nullable": true,
                         "example": "3SBOL0987654321"
                     },
                     "transporterName": {
                         "type": "string",
                         "description": "The name of the transporter.",
-                        "nullable": true,
                         "example": "PostNL"
                     },
                     "handled": {
@@ -7519,12 +7734,7 @@
                         }
                     },
                     "customerDetails": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/CustomerDetails"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/CustomerDetails"
                     }
                 }
             },
@@ -7562,7 +7772,6 @@
                     "kvkNumber": {
                         "type": "string",
                         "description": "The KVK number of the retailer.",
-                        "nullable": true,
                         "example": "90005414"
                     },
                     "registrationDate": {
@@ -7573,13 +7782,11 @@
                     "topRetailer": {
                         "type": "boolean",
                         "description": "Indication of retailer's being the top seller.",
-                        "nullable": true,
                         "example": false
                     },
                     "ratingMethod": {
                         "type": "string",
                         "description": "An identifier that identifies if the rating is calculated over the past three months or on all reviews for the retailer.",
-                        "nullable": true,
                         "example": "THREE_MONTHS",
                         "enum": [
                             "ALL_REVIEWS",
@@ -7587,20 +7794,10 @@
                         ]
                     },
                     "retailerRating": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/RetailerRating"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/RetailerRating"
                     },
                     "retailerReview": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/RetailerReview"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/RetailerReview"
                     }
                 }
             },
@@ -7611,47 +7808,43 @@
                 "type": "object",
                 "properties": {
                     "retailerRating": {
-                        "maximum": 9223372036854775807,
-                        "minimum": 0,
+                        "maximum": 10,
+                        "minimum": 1,
                         "type": "number",
                         "description": "General rating of the retailer.",
                         "format": "double",
                         "example": 9.1
                     },
                     "productInformationRating": {
-                        "maximum": 9223372036854775807,
-                        "minimum": 0,
+                        "maximum": 10,
+                        "minimum": 1,
                         "type": "number",
                         "description": "Product rating of the retailer.",
                         "format": "double",
-                        "nullable": true,
                         "example": 9.6
                     },
                     "deliveryTimeRating": {
-                        "maximum": 9223372036854775807,
-                        "minimum": 0,
+                        "maximum": 10,
+                        "minimum": 1,
                         "type": "number",
                         "description": "Delivery rating of the retailer.",
                         "format": "double",
-                        "nullable": true,
                         "example": 9.4
                     },
                     "shippingRating": {
-                        "maximum": 9223372036854775807,
-                        "minimum": 0,
+                        "maximum": 10,
+                        "minimum": 1,
                         "type": "number",
                         "description": "Shipping rating of the retailer.",
                         "format": "double",
-                        "nullable": true,
                         "example": 9.4
                     },
                     "serviceRating": {
-                        "maximum": 9223372036854775807,
-                        "minimum": 0,
+                        "maximum": 10,
+                        "minimum": 1,
                         "type": "number",
                         "description": "Service rating of the retailer.",
                         "format": "double",
-                        "nullable": true,
                         "example": 9.4
                     }
                 },
@@ -7674,12 +7867,11 @@
                         "example": 14
                     },
                     "approvalPercentage": {
-                        "maximum": 9223372036854775807,
+                        "maximum": 10,
                         "minimum": 0,
                         "type": "integer",
                         "description": "The percentage of the amount of customer that rated the retailer either neutral or positive during the rating method period.",
                         "format": "int32",
-                        "nullable": true,
                         "example": 100
                     },
                     "positiveReviewCount": {
@@ -7746,7 +7938,6 @@
                         "type": "string",
                         "description": "The date and time when this replenishment was created. In ISO 8601 format.",
                         "format": "date-time",
-                        "nullable": true,
                         "example": "2020-09-09T16:44:03+02:00"
                     },
                     "lines": {
@@ -7815,7 +8006,6 @@
                     "houseNumberExtension": {
                         "type": "string",
                         "description": "The extension of the house number of the pickup location.",
-                        "nullable": true,
                         "example": "B"
                     },
                     "zipCode": {
@@ -7857,10 +8047,14 @@
                     "transporterCode": {
                         "type": "string",
                         "description": "The transporter that will pickup this replenishment.",
-                        "nullable": true,
                         "example": "POSTNL",
                         "enum": [
-                            "POSTNL, DHL, DPD, GLS, UPS, OTHER"
+                            "POSTNL",
+                            "DHL",
+                            "DPD",
+                            "GLS",
+                            "UPS",
+                            "OTHER"
                         ]
                     },
                     "destinationWarehouse": {
@@ -7893,7 +8087,6 @@
                     "houseNumberExtension": {
                         "type": "string",
                         "description": "The extension of the house number.",
-                        "nullable": true,
                         "example": "B"
                     },
                     "zipCode": {
@@ -7942,7 +8135,6 @@
                         "type": "integer",
                         "description": "The amount of announced quantity for this replenishment line.",
                         "format": "int32",
-                        "nullable": true,
                         "example": 1
                     },
                     "quantityReceived": {
@@ -7981,29 +8173,30 @@
                     "sscc": {
                         "type": "string",
                         "description": "The Serial Shipping Container Code (SSCC) for this load carrier.",
-                        "nullable": true,
                         "example": "020001200000007000"
                     },
                     "transportLabelTrackAndTrace": {
                         "type": "string",
                         "description": "The track and trace code for this load carrier.",
-                        "nullable": true,
                         "example": "3SJTXX216692157"
                     },
                     "transportState": {
                         "type": "string",
                         "description": "The current state of the transport for this load carrier.",
-                        "nullable": true,
                         "example": "ANNOUNCED",
                         "enum": [
-                            "ANNOUNCED, PICKED_UP, UNDERWAY, DELAYED, ARRIVED, ERROR"
+                            "ANNOUNCED",
+                            "PICKED_UP",
+                            "UNDERWAY",
+                            "DELAYED",
+                            "ARRIVED",
+                            "ERROR"
                         ]
                     },
                     "transportStateUpdateDateTime": {
                         "type": "string",
                         "description": "The date and time in ISO 8601 format when the latest update for this transport was received.",
                         "format": "date-time",
-                        "nullable": true,
                         "example": "2021-01-02T09:00:00+01:00"
                     }
                 }
@@ -8018,7 +8211,6 @@
                     "commentToTransporter": {
                         "type": "string",
                         "description": "A comment to the transporter regarding the pickup appointment.",
-                        "nullable": true,
                         "example": "Eerste verdieping."
                     },
                     "address": {
@@ -8031,16 +8223,20 @@
                         "type": "string",
                         "description": "The date and time in ISO 8601 format when this replenishment was picked up by the transporter.",
                         "format": "date-time",
-                        "nullable": true,
                         "example": "2021-01-01T09:00:00+01:00"
                     },
                     "cancellationReason": {
                         "type": "string",
                         "description": "In case of a pickup cancellation this field indicates the reason for cancelling this pickup.",
-                        "nullable": true,
                         "example": "NOT_AT_HOME",
                         "enum": [
-                            "UNKNOWN_ADDRESS, NOT_READY, NO_LABEL, WRONG_PACKAGE, NOT_AT_HOME, OTHER_REASON, REQUEST_FROM_RETAILER"
+                            "UNKNOWN_ADDRESS",
+                            "NOT_READY",
+                            "NO_LABEL",
+                            "WRONG_PACKAGE",
+                            "NOT_AT_HOME",
+                            "OTHER_REASON",
+                            "REQUEST_FROM_RETAILER"
                         ]
                     }
                 }
@@ -8060,7 +8256,6 @@
                     "ean": {
                         "type": "string",
                         "description": "The EAN number associated with this product.",
-                        "nullable": true,
                         "example": "0000007740404"
                     },
                     "lineState": {
@@ -8068,14 +8263,15 @@
                         "description": "The state of the line indicating whether this line was announced within this replenishment.",
                         "example": "ANNOUNCED",
                         "enum": [
-                            "ANNOUNCED, UNANNOUNCED, UNKNOWN"
+                            "ANNOUNCED",
+                            "UNANNOUNCED",
+                            "UNKNOWN"
                         ]
                     },
                     "quantityAnnounced": {
                         "type": "integer",
                         "description": "The amount of announced quantity for this replenishment line.",
                         "format": "int32",
-                        "nullable": true,
                         "example": 1
                     },
                     "quantityReceived": {
@@ -8149,13 +8345,11 @@
                         "type": "string",
                         "description": "The date and time when this replenishment was created. In ISO 8601 format.",
                         "format": "date-time",
-                        "nullable": true,
                         "example": "2021-01-01T08:00:00+01:00"
                     },
                     "reference": {
                         "type": "string",
                         "description": "Custom user defined reference to identify the replenishment.",
-                        "nullable": true,
                         "example": "REFERENCE1"
                     },
                     "labelingByBol": {
@@ -8168,25 +8362,24 @@
                         "description": "Indicates the state of this replenishment order.",
                         "example": "ANNOUNCED",
                         "enum": [
-                            "ANNOUNCED, IN_TRANSIT, ARRIVED_AT_WH, IN_PROGRESS_AT_WH, CANCELLED, DONE"
+                            "ANNOUNCED",
+                            "IN_TRANSIT",
+                            "ARRIVED_AT_WH",
+                            "IN_PROGRESS_AT_WH",
+                            "CANCELLED",
+                            "DONE"
                         ]
                     },
                     "deliveryInformation": {
                         "$ref": "#/components/schemas/DeliveryInformation"
                     },
                     "pickupAppointment": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/PickupAppointment"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/PickupAppointment"
                     },
                     "numberOfLoadCarriers": {
                         "type": "integer",
                         "description": "The number of load carriers in this shipment.",
                         "format": "int32",
-                        "nullable": true,
                         "example": 1
                     },
                     "loadCarriers": {
@@ -8227,14 +8420,19 @@
                         "description": "Indicates the state of this replenishment order.",
                         "example": "ANNOUNCED",
                         "enum": [
-                            "DRAFT, ANNOUNCED, IN_TRANSIT, ARRIVED_AT_WH, IN_PROGRESS_AT_WH, CANCELLED, DONE"
+                            "DRAFT",
+                            "ANNOUNCED",
+                            "IN_TRANSIT",
+                            "ARRIVED_AT_WH",
+                            "IN_PROGRESS_AT_WH",
+                            "CANCELLED",
+                            "DONE"
                         ]
                     },
                     "stateDateTime": {
                         "type": "string",
                         "description": "The date and time in ISO 8601 format that indicates when this states was updated for this replenishment.",
                         "format": "date-time",
-                        "nullable": true,
                         "example": "2021-01-02T09:00:00+01:00"
                     }
                 }
@@ -8302,7 +8500,6 @@
                     "houseNumberExtension": {
                         "type": "string",
                         "description": "The house number extension of the bol.com warehouse address.",
-                        "nullable": true,
                         "example": "B"
                     }
                 }
@@ -8372,7 +8569,6 @@
                         "type": "string",
                         "description": "The ending date and time of the campaign.",
                         "format": "date-time",
-                        "nullable": true,
                         "example": "2021-05-10T00:00:00+02:00"
                     }
                 }
@@ -8399,7 +8595,6 @@
                 "properties": {
                     "promotions": {
                         "type": "array",
-                        "nullable": true,
                         "items": {
                             "$ref": "#/components/schemas/ReducedPromotion"
                         }
@@ -8462,12 +8657,7 @@
                         "example": false
                     },
                     "campaign": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/Campaign"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/Campaign"
                     }
                 },
                 "description": "A single promotion."
@@ -8527,12 +8717,7 @@
                         "example": false
                     },
                     "campaign": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/Campaign"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/Campaign"
                     }
                 },
                 "description": "A single promotion."
@@ -8550,7 +8735,6 @@
                     },
                     "relevanceScores": {
                         "type": "array",
-                        "nullable": true,
                         "items": {
                             "$ref": "#/components/schemas/RelevanceScore"
                         }
@@ -8558,7 +8742,6 @@
                     "maximumPrice": {
                         "type": "number",
                         "description": "The maximum price a product can have in order to be part of the promotion.",
-                        "nullable": true,
                         "example": 21.5
                     }
                 },
@@ -8585,7 +8768,6 @@
                     "countryCode": {
                         "type": "string",
                         "description": "The country for which the relevance score has been calculated against.",
-                        "nullable": true,
                         "example": "NL",
                         "enum": [
                             "NL",
@@ -8596,7 +8778,6 @@
                         "type": "integer",
                         "description": "The calculated relevance score for the product.",
                         "format": "int32",
-                        "nullable": true,
                         "example": 72,
                         "enum": [
                             null
@@ -8621,7 +8802,6 @@
                         "type": "integer",
                         "description": "The number of ratings for the corresponding scale.",
                         "format": "int32",
-                        "nullable": true,
                         "example": 30
                     }
                 }
@@ -8734,7 +8914,6 @@
                     "subcategories": {
                         "type": "array",
                         "description": "The subcategories which the product belongs to.",
-                        "nullable": true,
                         "items": {
                             "$ref": "#/components/schemas/SubCategory"
                         }
@@ -8765,13 +8944,11 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "The id of the subcategory which the product belongs to.",
-                        "nullable": true
+                        "description": "The id of the subcategory which the product belongs to."
                     },
                     "name": {
                         "type": "string",
-                        "description": "The name of the subcategory which the product belongs to.",
-                        "nullable": true
+                        "description": "The name of the subcategory which the product belongs to."
                     }
                 },
                 "description": "The subcategories which the product belongs to."
@@ -8835,27 +9012,23 @@
                     "condition": {
                         "type": "string",
                         "description": "The condition of the offered product.",
-                        "nullable": true,
                         "example": "NEW"
                     },
                     "ultimateOrderTime": {
                         "type": "string",
                         "description": "The time in ISO 8601 format when the ultimate order time on the day in order to comply to the maxDeliveryDate as a promise.",
-                        "nullable": true,
                         "example": "23:59"
                     },
                     "minDeliveryDate": {
                         "type": "string",
                         "description": "The date at which package can be delivered to customer earliest.",
                         "format": "date",
-                        "nullable": true,
                         "example": "2022-10-20"
                     },
                     "maxDeliveryDate": {
                         "type": "string",
                         "description": "The date at which package can be delivered to customer latest. In case of pre-orders where a specific delivery date is not available, this field will not be present.",
                         "format": "date",
-                        "nullable": true,
                         "example": "2022-10-21"
                     }
                 },
@@ -8960,12 +9133,10 @@
                 "properties": {
                     "search-term": {
                         "type": "string",
-                        "nullable": true,
                         "writeOnly": true
                     },
                     "category-id": {
                         "type": "string",
-                        "nullable": true,
                         "writeOnly": true
                     },
                     "search": {
@@ -9004,13 +9175,11 @@
                     "categoryValueId": {
                         "type": "string",
                         "description": "The id of the category. This id can be used in other endpoints, like Get product list.",
-                        "nullable": true,
                         "example": "7934"
                     },
                     "categoryValueName": {
                         "type": "string",
                         "description": "The name of the category.",
-                        "nullable": true,
                         "example": "Speelgoed"
                     }
                 },
@@ -9068,7 +9237,6 @@
                     "filterValueName": {
                         "type": "string",
                         "description": "The name of the filter value.",
-                        "nullable": true,
                         "example": "LEGO Star Wars"
                     }
                 },
@@ -9159,13 +9327,11 @@
                         "type": "integer",
                         "description": "The order of the category in the tree.",
                         "format": "int32",
-                        "nullable": true,
                         "example": 1
                     },
                     "subcategories": {
                         "type": "array",
                         "description": "A list of product subcategories and its children.",
-                        "nullable": true,
                         "items": {
                             "$ref": "#/components/schemas/ProductCategory"
                         }
@@ -9190,7 +9356,6 @@
                         "type": "string",
                         "description": "The date and time in ISO 8601 format when the order was placed.",
                         "format": "date-time",
-                        "nullable": true,
                         "example": "2017-02-09T12:39:48+01:00"
                     },
                     "orderItems": {
@@ -9271,7 +9436,6 @@
                         "type": "string",
                         "description": "The date and time in ISO 8601 format when the orderItem was last changed.",
                         "format": "date-time",
-                        "nullable": true,
                         "example": "2017-02-09T12:39:48+01:00"
                     }
                 },
@@ -9347,19 +9511,13 @@
                         "type": "string",
                         "description": "The date and time in ISO 8601 format when the order was placed.",
                         "format": "date-time",
-                        "nullable": true,
                         "example": "2017-02-09T12:39:48+01:00"
                     },
                     "shipmentDetails": {
                         "$ref": "#/components/schemas/ShipmentDetails"
                     },
                     "billingDetails": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/BillingDetails"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/BillingDetails"
                     },
                     "orderItems": {
                         "type": "array",
@@ -9385,7 +9543,6 @@
                     "distributionParty": {
                         "type": "string",
                         "description": "The party that manages the distribution, either bol.com or the retailer itself.",
-                        "nullable": true,
                         "example": "RETAILER",
                         "enum": [
                             "RETAILER",
@@ -9396,21 +9553,18 @@
                         "type": "string",
                         "description": "The ultimate delivery date at which this order must be delivered at the customer's shipping address. This field is empty in case the exactDeliveryDate is filled.",
                         "format": "date",
-                        "nullable": true,
                         "example": "2017-02-10"
                     },
                     "exactDeliveryDate": {
                         "type": "string",
                         "description": "The exact delivery date at which this order must be delivered at the customer's shipping address. This field is only filled when the customer chose an exact date for delivery. This field is empty in case the latestDeliveryDate is filled.",
                         "format": "date",
-                        "nullable": true,
                         "example": "2017-02-13"
                     },
                     "expiryDate": {
                         "type": "string",
                         "description": "The date this order item will automatically expire and thereby cancelling this order item from the order.",
                         "format": "date",
-                        "nullable": true,
                         "example": "2017-02-13"
                     },
                     "timeFrameType": {
@@ -9453,28 +9607,13 @@
                         "example": false
                     },
                     "fulfilment": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/OrderFulfilment"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/OrderFulfilment"
                     },
                     "offer": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/OrderOffer"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/OrderOffer"
                     },
                     "product": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/OrderProduct"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/OrderProduct"
                     },
                     "quantity": {
                         "type": "integer",
@@ -9517,7 +9656,6 @@
                     },
                     "additionalServices": {
                         "type": "array",
-                        "nullable": true,
                         "items": {
                             "$ref": "#/components/schemas/AdditionalService"
                         }
@@ -9526,7 +9664,6 @@
                         "type": "string",
                         "description": "The date and time in ISO 8601 format when the orderItem was last changed.",
                         "format": "date-time",
-                        "nullable": true,
                         "example": "2017-02-09T13:39:48+01:00"
                     }
                 },
@@ -9591,7 +9728,6 @@
                     "reference": {
                         "type": "string",
                         "description": "A user-defined reference that helps you identify this particular offer when receiving data from us. This element can optionally be left empty and has a maximum amount of 100 characters.",
-                        "nullable": true,
                         "example": "REF12345"
                     },
                     "onHoldByRetailer": {
@@ -9602,13 +9738,11 @@
                     "economicOperatorId": {
                         "type": "string",
                         "description": "An identifier referring to the Economic operator entity (manufacturer, authorized party, importer, distributor or other natural person or legal entity for whom the obligations apply with regards to the manufacturing, or making available on the market of the product in line with the applicable EU laws).",
-                        "nullable": true,
                         "example": "90bfddc5-a6d0-4986-9253-407b3a6850ca"
                     },
                     "unknownProductTitle": {
                         "type": "string",
                         "description": "In case the item is not known to bol.com you can use this field to identify this particular product. Note: in case the product is known to bol.com, the unknown product title will not be stored.",
-                        "nullable": true,
                         "example": "Unknown Product Title"
                     },
                     "pricing": {
@@ -9644,14 +9778,12 @@
                         "type": "integer",
                         "description": "The amount of stock available for the specified product present in the retailers warehouse. Note: this should not be the FBB stock! Defaults to 0.",
                         "format": "int32",
-                        "nullable": true,
                         "example": 6
                     },
                     "correctedStock": {
                         "type": "integer",
                         "description": "The amount of order items in stock minus handled order items and minus open order items. As compared to the stock you sent us. When this reaches 0, your offer will not be for sale on the shop.",
                         "format": "int32",
-                        "nullable": true,
                         "example": 5
                     },
                     "managedByRetailer": {
@@ -9670,7 +9802,6 @@
                     "productTitle": {
                         "type": "string",
                         "description": "The product title for the product associated with this offer.",
-                        "nullable": true,
                         "example": "Product Title"
                     },
                     "visible": {
@@ -9794,7 +9925,6 @@
                     },
                     "relatedSearchTerms": {
                         "type": "array",
-                        "nullable": true,
                         "items": {
                             "$ref": "#/components/schemas/RelatedSearchTerm"
                         }
@@ -9805,12 +9935,7 @@
                 "type": "object",
                 "properties": {
                     "searchTerms": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/SearchTerm"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/SearchTerm"
                     }
                 }
             },
@@ -9840,25 +9965,21 @@
                     "day": {
                         "type": "string",
                         "description": "Day number in the ISO-8601 standard.",
-                        "nullable": true,
                         "example": "19"
                     },
                     "week": {
                         "type": "string",
                         "description": "Week number in the ISO-8601 standard.",
-                        "nullable": true,
                         "example": "41"
                     },
                     "month": {
                         "type": "string",
                         "description": "Month number in the ISO-8601 standard.",
-                        "nullable": true,
                         "example": "11"
                     },
                     "year": {
                         "type": "string",
                         "description": "Year number in the ISO-8601 standard.",
-                        "nullable": true,
                         "example": "2020"
                     }
                 }
@@ -9898,7 +10019,6 @@
                     "countryCode": {
                         "type": "string",
                         "description": "Countries in which this offer is currently on sale in the webshop, in ISO-3166-1 format.",
-                        "nullable": true,
                         "example": "NL"
                     },
                     "minimum": {
@@ -9911,7 +10031,6 @@
                         "type": "number",
                         "description": "Maximum number of estimated sales expectations on the bol.com platform.",
                         "format": "double",
-                        "nullable": true,
                         "example": 20.5
                     }
                 }
@@ -9995,7 +10114,6 @@
                         "type": "number",
                         "description": "Maximum number of estimated sales expectations on the bol.com platform.",
                         "format": "double",
-                        "nullable": true,
                         "example": 20.5
                     }
                 }
@@ -10032,13 +10150,11 @@
                     "categoryId": {
                         "type": "string",
                         "description": "The ID of the category to which the product belongs.",
-                        "nullable": true,
                         "example": "53495"
                     },
                     "searchTerm": {
                         "type": "string",
                         "description": "Search term related to the rank.",
-                        "nullable": true,
                         "example": "dvd"
                     },
                     "wasSponsored": {
@@ -10072,12 +10188,7 @@
                         "$ref": "#/components/schemas/PerformanceIndicatorPeriod"
                     },
                     "score": {
-                        "nullable": true,
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/Score"
-                            }
-                        ]
+                        "$ref": "#/components/schemas/Score"
                     },
                     "norm": {
                         "$ref": "#/components/schemas/Norm"
@@ -10246,7 +10357,6 @@
                         "type": "number",
                         "description": "Total number of customer visits on the product page when the offer had the buy box over the requested period (excluding the current day).",
                         "format": "double",
-                        "nullable": true,
                         "example": 50
                     },
                     "countries": {
@@ -10308,21 +10418,18 @@
                         "type": "integer",
                         "description": "Day of the month.",
                         "format": "int32",
-                        "nullable": true,
                         "example": 1
                     },
                     "week": {
                         "type": "integer",
                         "description": "Week of the year.",
                         "format": "int32",
-                        "nullable": true,
                         "example": 49
                     },
                     "month": {
                         "type": "integer",
                         "description": "Month of the year.",
                         "format": "int32",
-                        "nullable": true,
                         "example": 12
                     },
                     "year": {
@@ -10346,15 +10453,436 @@
                         "type": "number",
                         "description": "Total number of customer visits on the product page when the offer had the buy box over the requested period (excluding the current day).",
                         "format": "double",
-                        "nullable": true,
                         "example": 50
                     },
                     "countries": {
                         "type": "array",
-                        "nullable": true,
                         "items": {
                             "$ref": "#/components/schemas/OfferInsightsCountry"
                         }
+                    }
+                }
+            },
+            "UploadReportAsset": {
+                "required": [
+                    "labels",
+                    "status",
+                    "url"
+                ],
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "description": "The URL of the asset.",
+                        "example": "http://example.com"
+                    },
+                    "labels": {
+                        "type": "array",
+                        "description": "The label(s) of the asset.",
+                        "example": [
+                            "FRONT"
+                        ],
+                        "items": {
+                            "type": "string",
+                            "description": "The label(s) of the asset.",
+                            "example": "[\"FRONT\"]"
+                        }
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "The processing state of the submitted asset.",
+                        "example": "DECLINED",
+                        "enum": [
+                            "IN_PROGRESS",
+                            "DECLINED",
+                            "PUBLISHED"
+                        ]
+                    },
+                    "subStatus": {
+                        "type": "string",
+                        "description": "The reason code explaining why the value was rejected.",
+                        "example": "DOWNLOAD_FAILED_404",
+                        "enum": [
+                            "DELETED",
+                            "DOWNLOAD_FAILED_404",
+                            "DOWNLOAD_FAILED_UNAUTHORIZED",
+                            "IMAGE_FLAGGED_AS_DUPLICATE",
+                            "IMAGE_RATE_LIMITED",
+                            "IMPORT_FAILED",
+                            "LABEL_UPDATED",
+                            "MATCH_TO_PRODUCT_FAILED",
+                            "NOT_VALID_FOR_IMPORT",
+                            "PUBLISHED",
+                            "RECEIVED",
+                            "SCORED_OTHER_IMAGE_WON",
+                            "STORED",
+                            "SUPPLIED_FLAGGED_AS_BLACKLISTED",
+                            "UNKNOWN",
+                            "UNPUBLISHED",
+                            "UNSUPPORTED_MIMETYPE",
+                            "UPLOAD_CANCELLED",
+                            "UPLOAD_DEADLINE_REACHED",
+                            "UPLOAD_FAILED",
+                            "UPLOAD_REJECTED"
+                        ]
+                    },
+                    "subStatusDescription": {
+                        "type": "string",
+                        "description": "The reason explaining why the value was rejected.",
+                        "example": "Failed to download."
+                    }
+                }
+            },
+            "UploadReportAttribute": {
+                "required": [
+                    "id",
+                    "status",
+                    "values"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "The identifier of the attribute for which the value has changed.",
+                        "example": "Width"
+                    },
+                    "values": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/UploadReportValue"
+                        }
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "The processing state of the submitted attribute.",
+                        "example": "DECLINED",
+                        "enum": [
+                            "IN_PROGRESS",
+                            "DECLINED",
+                            "PUBLISHED"
+                        ]
+                    },
+                    "subStatus": {
+                        "type": "string",
+                        "description": "The reason code explaining why the value was rejected.",
+                        "example": "INVALID_NUMBER",
+                        "enum": [
+                            "BLOCKED_BY_RATE_LIMITER",
+                            "CREATED",
+                            "DEPRECATED",
+                            "IDENTICAL_VALUE_AS_BEFORE",
+                            "MATCH_TO_PRODUCT_FAILED",
+                            "NOT_CHANGED",
+                            "NOT_RECENT",
+                            "PROCESSING_STARTED",
+                            "RECEIVED",
+                            "REJECTED",
+                            "REJECTED_BY_BRAND_AUTHORITY",
+                            "REJECTED_BY_LOGISTIC",
+                            "REJECTED_NO_DATA",
+                            "REJECTED_UNPROCESSABLE",
+                            "SELECTED",
+                            "SELECTED_BY_BRAND_AUTHORITY",
+                            "SELECTED_BY_LOGISTIC",
+                            "SELECTION_DELETED",
+                            "SELECTION_MERGED",
+                            "TIMED_OUT",
+                            "UPDATED",
+                            "UPLOADED",
+                            "UNKNOWN",
+                            "VALID_EAN",
+                            "VALIDATED",
+                            "VALIDATION_FAILED",
+                            "VALIDATION_FAILED_DISABLED_GPC_CODE",
+                            "VALIDATION_FAILED_DOES_NOT_EXIST",
+                            "VALIDATION_FAILED_INVALID_DATE",
+                            "VALIDATION_FAILED_INVALID_EAN",
+                            "VALIDATION_FAILED_INVALID_FRACTION",
+                            "VALIDATION_FAILED_INVALID_GPC_CODE",
+                            "VALIDATION_FAILED_INVALID_INTEGER",
+                            "VALIDATION_FAILED_INVALID_ISODATE",
+                            "VALIDATION_FAILED_INVALID_ISODATETIME",
+                            "VALIDATION_FAILED_INVALID_LOV_VALUE",
+                            "VALIDATION_FAILED_INVALID_MULTIPLE_VALUES",
+                            "VALIDATION_FAILED_INVALID_NO_VALUES",
+                            "VALIDATION_FAILED_INVALID_NUMBER",
+                            "VALIDATION_FAILED_INVALID_NUMERIC_TEXT",
+                            "VALIDATION_FAILED_INVALID_TEXT",
+                            "VALIDATION_FAILED_INVALID_UNIT",
+                            "VALIDATION_FAILED_INVALID_URL",
+                            "VALIDATION_FAILED_INVALID_VALUES",
+                            "VALIDATION_FAILED_NOT_ALLOWED",
+                            "VALIDATION_FAILED_UNKNOWN_BASETYPE",
+                            "WAITING_FOR_GLOBAL_ID"
+                        ]
+                    },
+                    "subStatusDescription": {
+                        "type": "string",
+                        "description": "The reason explaining why the value was rejected.",
+                        "example": "The provided number is not correct."
+                    }
+                }
+            },
+            "UploadReportResponse": {
+                "required": [
+                    "attributes",
+                    "language",
+                    "status",
+                    "uploadId"
+                ],
+                "type": "object",
+                "properties": {
+                    "uploadId": {
+                        "type": "string",
+                        "description": "The identifier of the upload report.",
+                        "example": "3fa90f24-5b44-417f-b212-5cd18ce64c0e"
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": "The language in which content is submitted.",
+                        "example": "nl",
+                        "enum": [
+                            "nl",
+                            "nl-BE",
+                            "fr",
+                            "fr-BE"
+                        ]
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "The current status of the upload report.",
+                        "example": "IN_PROGRESS",
+                        "enum": [
+                            "IN_PROGRESS",
+                            "COMPLETED"
+                        ]
+                    },
+                    "attributes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/UploadReportAttribute"
+                        }
+                    },
+                    "assets": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/UploadReportAsset"
+                        }
+                    }
+                },
+                "description": "Upload report."
+            },
+            "UploadReportValue": {
+                "required": [
+                    "value"
+                ],
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "description": "The value of the attribute.",
+                        "example": "14.5"
+                    },
+                    "unitId": {
+                        "type": "string",
+                        "description": "The unit identifier of the attribute.",
+                        "example": "mm"
+                    }
+                }
+            },
+            "Attributes": {
+                "required": [
+                    "id",
+                    "values"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "The identifier of the attribute.",
+                        "example": "Appearance Name"
+                    },
+                    "values": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Values"
+                        }
+                    }
+                }
+            },
+            "AudioTracks": {
+                "type": "object",
+                "properties": {
+                    "discNumber": {
+                        "type": "string",
+                        "description": "The disc number within an album the audio track is stored on.",
+                        "example": "1"
+                    },
+                    "trackNumber": {
+                        "type": "string",
+                        "description": "The track number on the album.",
+                        "example": "14"
+                    },
+                    "discSide": {
+                        "type": "string",
+                        "description": "The disc side on which the audio track is stored on.",
+                        "example": "A"
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "The title of the audio track.",
+                        "example": "Back home"
+                    },
+                    "artistName": {
+                        "type": "string",
+                        "description": "The name of the artist(s) performing the audio track.",
+                        "example": "Golden Earring"
+                    },
+                    "playTime": {
+                        "type": "string",
+                        "description": "The play time of the audio track.",
+                        "example": "3:51"
+                    },
+                    "clipUrl": {
+                        "type": "string",
+                        "description": "The URL on which an audio clip of the audio track has been made available.",
+                        "example": "https://example.com/ABC.mp3"
+                    },
+                    "clipType": {
+                        "type": "string",
+                        "description": "The format in which the audio clip is available.",
+                        "example": "mp3"
+                    }
+                }
+            },
+            "CatalogProduct": {
+                "required": [
+                    "attributes",
+                    "gpc",
+                    "parties",
+                    "published"
+                ],
+                "type": "object",
+                "properties": {
+                    "published": {
+                        "type": "boolean",
+                        "description": "Indicates whether the product meets the minimum requirements for publishing to the webshop.",
+                        "example": true
+                    },
+                    "gpc": {
+                        "$ref": "#/components/schemas/Gpc"
+                    },
+                    "enrichment": {
+                        "$ref": "#/components/schemas/Enrichment"
+                    },
+                    "attributes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Attributes"
+                        }
+                    },
+                    "parties": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Party"
+                        }
+                    },
+                    "audioTracks": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AudioTracks"
+                        }
+                    },
+                    "series": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Serie"
+                        }
+                    }
+                }
+            },
+            "Enrichment": {
+                "required": [
+                    "status"
+                ],
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "integer",
+                        "description": "The current enrichment level of the product.",
+                        "format": "int32",
+                        "example": 1
+                    }
+                }
+            },
+            "Gpc": {
+                "required": [
+                    "chunkId"
+                ],
+                "type": "object",
+                "properties": {
+                    "chunkId": {
+                        "type": "string",
+                        "description": "The identifier of the current GPC/Product Classification.",
+                        "example": "30005965"
+                    }
+                }
+            },
+            "Party": {
+                "required": [
+                    "name",
+                    "role",
+                    "type"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "The name of the party involved for this product.",
+                        "example": "Maybelline"
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "The type of party involved for this product.",
+                        "example": "Brand"
+                    },
+                    "role": {
+                        "type": "string",
+                        "description": "The role of the party involved for this product.",
+                        "example": "BRAND"
+                    }
+                }
+            },
+            "Serie": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "The name of the product serie(s) the EAN belongs to.",
+                        "example": "Maybelline Lash Sensational"
+                    }
+                }
+            },
+            "Values": {
+                "required": [
+                    "value"
+                ],
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "description": "The value of the attribute.",
+                        "example": "122"
+                    },
+                    "unitId": {
+                        "type": "string",
+                        "description": "The unit identifier of the attribute.",
+                        "example": "unece.unit.MMT"
+                    },
+                    "valueId": {
+                        "type": "string",
+                        "description": "The identifier of the attribute's value. ",
+                        "example": "700071825"
                     }
                 }
             }

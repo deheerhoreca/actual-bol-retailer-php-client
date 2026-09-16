@@ -19,7 +19,6 @@ class Fulfilment extends AbstractModel
         return [
             'method' => [ 'model' => null, 'enum' => Enum\FulfilmentMethod::class, 'array' => false ],
             'deliveryCode' => [ 'model' => null, 'enum' => Enum\FulfilmentDeliveryCode::class, 'array' => false ],
-            'profileId' => [ 'model' => null, 'enum' => null, 'array' => false ],
         ];
     }
 
@@ -33,9 +32,4 @@ class Fulfilment extends AbstractModel
      * combination with fulfilmentMethod 'FBR'.
      */
     public $deliveryCode;
-
-    /**
-     * @var string Profile ID reference used for custom fulfillment options.
-     */
-    public $profileId;
 }
