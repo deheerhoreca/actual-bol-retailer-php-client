@@ -36,7 +36,9 @@ class ClientGenerator
         $retailer = (new SwaggerSpecs())->load(__DIR__ . '/retailer.json')
             ->merge((new SwaggerSpecs())->load(__DIR__ . '/shared.json'))
             ->merge((new SwaggerSpecs())->load(__DIR__ . '/economic-operators.json'))
-            ->merge((new SwaggerSpecs())->load(__DIR__ . '/delivery-promise.json'));
+            ->merge((new SwaggerSpecs())->load(__DIR__ . '/delivery-promise.json'))
+            ->merge((new SwaggerSpecs())->load(__DIR__ . '/offers-v11.json'))
+            ->merge((new SwaggerSpecs())->load(__DIR__ . '/retailers-v11.json'));
         $this->specs = $retailer->getSpecs();
     }
 
@@ -108,7 +110,7 @@ class ClientGenerator
         $nullableReturnType = false;
         if ($this->hasInlined404Response($methodDefinition['responses'])) {
             $nullableReturnType = true;
-            if (! isset($returnType['property'])) {
+            if (! isset($returnType['property']) && $returnType['php'] !== 'void') {
                 $returnType['doc'] = $returnType['doc'] . '|null';
                 $returnType['php'] = '?' . $returnType['php'];
             }
@@ -118,7 +120,7 @@ class ClientGenerator
 
         $code[] = '';
         $code[] = '    /**';
-        $code[] = $this->wrapComment($methodDefinition['description'], '     * ');
+        $code[] = $this->wrapComment($methodDefinition['description'] ?? $methodDefinition['summary'] ?? '', '     * ');
         $this->addParamsPhpDoc($arguments, $code);
         $code[] = sprintf('     * @return %s', $returnType['doc']);
         $code[] = '     * @throws Exception\ConnectException when an error occurred in the HTTP connection.';
@@ -137,7 +139,7 @@ class ClientGenerator
         $this->addBodyParam($arguments, $code);
         $this->addFormData($arguments, $code);
 
-        $responseContent = $methodDefinition['responses']['200']['content'] ?? $methodDefinition['responses']['202']['content'] ?? $methodDefinition['responses']['207']['content'] ?? $methodDefinition['responses']['400']['content'] ?? null;
+        $responseContent = $methodDefinition['responses']['200']['content'] ?? $methodDefinition['responses']['201']['content'] ?? $methodDefinition['responses']['202']['content'] ?? $methodDefinition['responses']['204']['content'] ?? $methodDefinition['responses']['207']['content'] ?? $methodDefinition['responses']['400']['content'] ?? null;
         $code[] = sprintf('            \'produces\' => \'%s\',', array_key_first($responseContent));
 
         if ($methodDefinition['requestBody']['content'] ?? false) {
@@ -172,6 +174,12 @@ class ClientGenerator
                 strtoupper($httpMethod),
                 $options,
                 $returnType['property']
+            );
+        } elseif ($returnType['php'] === 'void') {
+            $code[] = sprintf(
+                '        $this->request(\'%s\', $url, %s, $responseTypes);',
+                strtoupper($httpMethod),
+                $options
             );
         } else {
             $code[] = sprintf(
@@ -256,6 +264,11 @@ class ClientGenerator
 
     protected function getUrl(string $path, array $arguments): string
     {
+        // strip the alias fragment added by SwaggerSpecs::merge for colliding path + method pairs
+        if (($aliasPosition = strpos($path, '#')) !== false) {
+            $path = substr($path, 0, $aliasPosition);
+        }
+
         $url = substr($path, strlen('/'));
 
         foreach ($arguments as $argument) {
@@ -511,7 +524,7 @@ class ClientGenerator
         $code[] = '        $responseTypes = [';
         foreach ($responses as $httpStatus => $response) {
             $type = null;
-            if (in_array($httpStatus, ['200', '202', '207'])) {
+            if (in_array($httpStatus, ['200', '201', '202', '207'])) {
                 $response = current($response['content'] ?? []);
 
                 if (! isset($response['schema'])) {
@@ -522,6 +535,8 @@ class ClientGenerator
                 } else {
                     $type = '\'string\'';
                 }
+            } elseif ($httpStatus == '204') {
+                $type = '\'null\'';
             } elseif ($httpStatus == '404' && $this->hasInlined404Response($responses)) {
                 $type = '\'null\'';
             }
@@ -534,8 +549,13 @@ class ClientGenerator
 
     protected function getReturnType(array $responses): array
     {
-        $response = $responses['200'] ?? $responses['202'] ?? $responses['207'] ?? null;
+        $response = $responses['200'] ?? $responses['201'] ?? $responses['202'] ?? $responses['207'] ?? null;
         if ($response === null) {
+            if (isset($responses['204'])) {
+                // operations that only specify a 204 'No Content' response return nothing
+                return ['doc' => 'void', 'php' => 'void'];
+            }
+
             throw new Exception('Could not fit responseType: ' . print_r($responses, true));
         }
 
@@ -591,7 +611,10 @@ class ClientGenerator
 
     protected function wrapComment(string $comment, string $linePrefix, int $maxLength = 120): string
     {
-        $wordWrapped = wordwrap(strip_tags($comment), $maxLength - strlen($linePrefix));
+        // collapse all whitespace runs (e.g. newlines and indentation from folded YAML scalars,
+        // or spacing in markdown tables) to avoid trailing whitespace in the generated doc blocks
+        $comment = preg_replace('/\s+/', ' ', strip_tags($comment));
+        $wordWrapped = wordwrap($comment, $maxLength - strlen($linePrefix));
         return $linePrefix . trim(str_replace("\n", "\n{$linePrefix}", $wordWrapped));
     }
 

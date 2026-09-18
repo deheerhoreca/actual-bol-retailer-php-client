@@ -27,6 +27,24 @@ class SpecsDownloader
             'format' => 'yaml',
             'collisionPrefix' => 'DeliveryPromise',
         ],
+        [
+            'source' => 'https://api.bol.com/registry/api-definitions/offers/offers-v11.yaml',
+            'target' => 'offers-v11.json',
+            'format' => 'yaml',
+            'collisionPrefix' => 'V11',
+            // These operations also exist in the v10 Retailer API spec; rename them so both
+            // versions can be offered as separate methods on the generated Client.
+            'operationIdOverrides' => [
+                'get-offer' => 'get-offer-v11',
+                'delete-offer' => 'delete-offer-v11',
+            ],
+        ],
+        [
+            'source' => 'https://api.bol.com/registry/api-definitions/retailers/retailers-v11.yaml',
+            'target' => 'retailers-v11.json',
+            'format' => 'yaml',
+            'collisionPrefix' => 'V11',
+        ],
     ];
 
     public static function run(): void
@@ -46,6 +64,8 @@ class SpecsDownloader
                 );
             }
 
+            $specContents = static::applyOperationIdOverrides($specContents, $spec['operationIdOverrides'] ?? []);
+
             // Tidy JSON formatting
             $sourceTidied = json_encode($specContents, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES + JSON_UNESCAPED_UNICODE);
 
@@ -55,5 +75,23 @@ class SpecsDownloader
                 $reservedSchemaNames[] = $schemaName;
             }
         }
+    }
+
+    private static function applyOperationIdOverrides(array $specContents, array $overrides): array
+    {
+        if ($overrides === []) {
+            return $specContents;
+        }
+
+        foreach ($specContents['paths'] ?? [] as $path => $methods) {
+            foreach ($methods as $httpMethod => $definition) {
+                $operationId = $definition['operationId'] ?? null;
+                if ($operationId !== null && isset($overrides[$operationId])) {
+                    $specContents['paths'][$path][$httpMethod]['operationId'] = $overrides[$operationId];
+                }
+            }
+        }
+
+        return $specContents;
     }
 }

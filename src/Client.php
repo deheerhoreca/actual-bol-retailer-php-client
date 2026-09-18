@@ -506,6 +506,45 @@ class Client extends BaseClient
     }
 
     /**
+     * Get offers
+     * @param array $offerIds List of offer ids to search for.
+     * @param array $eans List of eans to search for
+     * @param string|null $reference Filter offers by reference.
+     * @param bool|null $forSale Filter offers based on whether they are for sale.
+     * @param string|null $lastModifiedDateTime Filter offers updated since the specified date-time. The timestamp
+     * should be in ISO 8601 format (UTC).
+     * @param int|null $pageSize The number of offers per page.
+     * @param string|null $cursor Cursor token used to retrieve the next page of results.
+     * @return Model\OfferListResponse
+     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
+     * @throws Exception\ResponseException when an unexpected response was received.
+     * @throws Exception\UnauthorizedException when the request was unauthorized.
+     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
+     * @throws Exception\Exception when something unexpected went wrong.
+     */
+    public function getOffers(array $offerIds = [], array $eans = [], ?string $reference = null, ?bool $forSale = null, ?string $lastModifiedDateTime = null, ?int $pageSize = null, ?string $cursor = null): Model\OfferListResponse
+    {
+        $url = "retailer/offers";
+        $options = [
+            'query' => [
+                'offer-ids' => $offerIds,
+                'eans' => $eans,
+                'reference' => $reference,
+                'for-sale' => $forSale,
+                'last-modified-date-time' => $lastModifiedDateTime,
+                'page-size' => $pageSize,
+                'cursor' => $cursor,
+            ],
+            'produces' => 'application/vnd.retailer.v11+json',
+        ];
+        $responseTypes = [
+            '200' => Model\OfferListResponse::class,
+        ];
+
+        return $this->request('GET', $url, $options, $responseTypes);
+    }
+
+    /**
      * Request an offer export file containing all offers.
      * @param string $format
      * @return Model\ProcessStatus
@@ -674,6 +713,32 @@ class Client extends BaseClient
         ];
 
         return $this->request('DELETE', $url, $options, $responseTypes);
+    }
+
+    /**
+     * Update an offer
+     * @param string $offerId The unique identifier of the offer to be updated.
+     * @param Model\PatchOfferRequest $patchOfferRequest
+     * @return void
+     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
+     * @throws Exception\ResponseException when an unexpected response was received.
+     * @throws Exception\UnauthorizedException when the request was unauthorized.
+     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
+     * @throws Exception\Exception when something unexpected went wrong.
+     */
+    public function updateOffer(string $offerId, Model\PatchOfferRequest $patchOfferRequest): void
+    {
+        $url = "retailer/offers/{$offerId}";
+        $options = [
+            'body' => $patchOfferRequest,
+            'produces' => 'application/vnd.retailer.v11+json',
+            'consumes' => 'application/vnd.retailer.v11+json',
+        ];
+        $responseTypes = [
+            '204' => 'null',
+        ];
+
+        $this->request('PATCH', $url, $options, $responseTypes);
     }
 
     /**
@@ -2264,5 +2329,197 @@ class Client extends BaseClient
         ];
 
         return $this->request('GET', $url, $options, $responseTypes)->profiles;
+    }
+
+    /**
+     * Create a new offer
+     * @param Model\V11CreateOfferRequest $v11CreateOfferRequest
+     * @return Model\V11RetailerOffer
+     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
+     * @throws Exception\ResponseException when an unexpected response was received.
+     * @throws Exception\UnauthorizedException when the request was unauthorized.
+     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
+     * @throws Exception\Exception when something unexpected went wrong.
+     */
+    public function createOffer(Model\V11CreateOfferRequest $v11CreateOfferRequest): Model\V11RetailerOffer
+    {
+        $url = "retailer/offers";
+        $options = [
+            'body' => $v11CreateOfferRequest,
+            'produces' => 'application/vnd.retailer.v11+json',
+            'consumes' => 'application/vnd.retailer.v11+json',
+        ];
+        $responseTypes = [
+            '201' => Model\V11RetailerOffer::class,
+        ];
+
+        return $this->request('POST', $url, $options, $responseTypes);
+    }
+
+    /**
+     * Get an offer by offer id
+     * @param string $offerId The unique identifier of the offer.
+     * @return Model\OfferResponse
+     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
+     * @throws Exception\ResponseException when an unexpected response was received.
+     * @throws Exception\UnauthorizedException when the request was unauthorized.
+     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
+     * @throws Exception\Exception when something unexpected went wrong.
+     */
+    public function getOfferV11(string $offerId): Model\OfferResponse
+    {
+        $url = "retailer/offers/{$offerId}";
+        $options = [
+            'produces' => 'application/vnd.retailer.v11+json',
+        ];
+        $responseTypes = [
+            '200' => Model\OfferResponse::class,
+        ];
+
+        return $this->request('GET', $url, $options, $responseTypes);
+    }
+
+    /**
+     * Delete offer by id
+     * @param string $offerId The unique identifier of the offer to be deleted.
+     * @return void
+     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
+     * @throws Exception\ResponseException when an unexpected response was received.
+     * @throws Exception\UnauthorizedException when the request was unauthorized.
+     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
+     * @throws Exception\Exception when something unexpected went wrong.
+     */
+    public function deleteOfferV11(string $offerId): void
+    {
+        $url = "retailer/offers/{$offerId}";
+        $options = [
+            'produces' => 'application/vnd.retailer.v11+json',
+        ];
+        $responseTypes = [
+            '204' => 'null',
+        ];
+
+        $this->request('DELETE', $url, $options, $responseTypes);
+    }
+
+    /**
+     * Get not for sale reasons for an offer by offer id
+     * @param string $offerId The unique identifier of the offer.
+     * @return Model\NotForSaleReasons
+     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
+     * @throws Exception\ResponseException when an unexpected response was received.
+     * @throws Exception\UnauthorizedException when the request was unauthorized.
+     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
+     * @throws Exception\Exception when something unexpected went wrong.
+     */
+    public function getNotForSaleReasons(string $offerId): Model\NotForSaleReasons
+    {
+        $url = "retailer/offers/{$offerId}/not-for-sale-reasons";
+        $options = [
+            'produces' => 'application/vnd.retailer.v11+json',
+        ];
+        $responseTypes = [
+            '200' => Model\NotForSaleReasons::class,
+        ];
+
+        return $this->request('GET', $url, $options, $responseTypes);
+    }
+
+    /**
+     * This endpoint allows retailers to retrieve general retailer information.
+     * @param string $retailerId The ID of the retailer which information belongs to. Use 'current' to retrieve
+     * information of the currently authenticated retailer account.
+     * @return Model\RetailerInformation
+     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
+     * @throws Exception\ResponseException when an unexpected response was received.
+     * @throws Exception\UnauthorizedException when the request was unauthorized.
+     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
+     * @throws Exception\Exception when something unexpected went wrong.
+     */
+    public function retailerInformationByRetailerId(string $retailerId): Model\RetailerInformation
+    {
+        $url = "retailer/retailers/{$retailerId}";
+        $options = [
+            'produces' => 'application/vnd.retailer.v11+json',
+        ];
+        $responseTypes = [
+            '200' => Model\RetailerInformation::class,
+        ];
+
+        return $this->request('GET', $url, $options, $responseTypes);
+    }
+
+    /**
+     * This endpoint allows retailers to retrieve retailer ratings information.
+     * @param string $retailerId The ID of the retailer which the rating belongs to. Use 'current' to retrieve ratings
+     * of the currently authenticated retailer account.
+     * @return Model\RetailerRatings
+     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
+     * @throws Exception\ResponseException when an unexpected response was received.
+     * @throws Exception\UnauthorizedException when the request was unauthorized.
+     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
+     * @throws Exception\Exception when something unexpected went wrong.
+     */
+    public function retailerRatings(string $retailerId): Model\RetailerRatings
+    {
+        $url = "retailer/retailers/{$retailerId}/ratings";
+        $options = [
+            'produces' => 'application/vnd.retailer.v11+json',
+        ];
+        $responseTypes = [
+            '200' => Model\RetailerRatings::class,
+        ];
+
+        return $this->request('GET', $url, $options, $responseTypes);
+    }
+
+    /**
+     * This endpoint allows retailers to retrieve current performance status information.
+     * @return Model\PerformanceStatus
+     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
+     * @throws Exception\ResponseException when an unexpected response was received.
+     * @throws Exception\UnauthorizedException when the request was unauthorized.
+     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
+     * @throws Exception\Exception when something unexpected went wrong.
+     */
+    public function retailerPerformanceStatus(): Model\PerformanceStatus
+    {
+        $url = "retailer/retailers/performance-status";
+        $options = [
+            'produces' => 'application/vnd.retailer.v11+json',
+        ];
+        $responseTypes = [
+            '200' => Model\PerformanceStatus::class,
+        ];
+
+        return $this->request('GET', $url, $options, $responseTypes);
+    }
+
+    /**
+     * This endpoint allows retailers to retrieve KPI score information.
+     * @param Enum\RetailerKpiScoresKpi $kpi Service norm name for the score.
+     * @param string $week The week number for which the score is requested in the ISO-8601 format 'YYYY-WW'.
+     * @return Model\KpiScore
+     * @throws Exception\ConnectException when an error occurred in the HTTP connection.
+     * @throws Exception\ResponseException when an unexpected response was received.
+     * @throws Exception\UnauthorizedException when the request was unauthorized.
+     * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
+     * @throws Exception\Exception when something unexpected went wrong.
+     */
+    public function retailerKpiScores(Enum\RetailerKpiScoresKpi $kpi, string $week): Model\KpiScore
+    {
+        $url = "retailer/retailers/kpi-scores";
+        $options = [
+            'query' => [
+                'kpi' => $kpi->value,
+                'week' => $week,
+            ],
+            'produces' => 'application/vnd.retailer.v11+json',
+        ];
+        $responseTypes = [
+            '200' => Model\KpiScore::class,
+        ];
+
+        return $this->request('GET', $url, $options, $responseTypes);
     }
 }

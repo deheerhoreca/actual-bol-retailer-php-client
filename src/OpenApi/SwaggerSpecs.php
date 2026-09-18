@@ -40,7 +40,22 @@ class SwaggerSpecs
         $resultSpecs = $this->specs;
         $otherSpecs = $specs->getSpecs();
 
-        $resultSpecs['paths'] = array_merge($resultSpecs['paths'], $otherSpecs['paths']);
+        foreach ($otherSpecs['paths'] as $path => $methods) {
+            foreach ($methods as $httpMethod => $definition) {
+                $targetPath = $path;
+
+                if (isset($resultSpecs['paths'][$path][$httpMethod])) {
+                    // The same path + HTTP method exists in an earlier merged spec (e.g. v10 and
+                    // v11 Offers API operations that share a URL but use different content types).
+                    // Keep both by storing the new operation under an aliased path key; the
+                    // generators strip everything from the '#' when building the request URL.
+                    $targetPath = $path . '#' . ($definition['operationId'] ?? $httpMethod);
+                }
+
+                $resultSpecs['paths'][$targetPath][$httpMethod] = $definition;
+            }
+        }
+
         $resultSpecs['components']['schemas'] = array_merge($resultSpecs['components']['schemas'], $otherSpecs['components']['schemas']);
 
         return new SwaggerSpecs($resultSpecs);

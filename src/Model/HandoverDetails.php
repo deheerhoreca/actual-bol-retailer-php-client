@@ -32,7 +32,7 @@ class HandoverDetails extends AbstractModel
     public $meetsCustomerExpectation;
 
     /**
-     * @var string The date and time at which the parcel can be earliest  at the transporter to make sure your parcel is
+     * @var string The date and time at which the parcel can be earliest at the transporter to make sure your parcel is
      * delivered on time.
      */
     public $earliestHandoverDateTime;
