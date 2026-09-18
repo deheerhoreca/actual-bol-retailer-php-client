@@ -4,6 +4,8 @@ namespace Picqer\BolRetailerV10\OpenApi;
 
 class ModelGenerator
 {
+    use SchemaPropertyNormalizer;
+
     protected static $propTypeMapping = [
         'array' => 'array',
         'string' => 'string',
@@ -25,7 +27,9 @@ class ModelGenerator
     public function __construct()
     {
         $retailer = (new SwaggerSpecs())->load(__DIR__ . '/retailer.json')
-            ->merge((new SwaggerSpecs())->load(__DIR__ . '/shared.json'));
+            ->merge((new SwaggerSpecs())->load(__DIR__ . '/shared.json'))
+            ->merge((new SwaggerSpecs())->load(__DIR__ . '/economic-operators.json'))
+            ->merge((new SwaggerSpecs())->load(__DIR__ . '/delivery-promise.json'));
 
         $this->specs = $retailer->getSpecs();
     }
@@ -110,6 +114,8 @@ class ModelGenerator
     {
         echo $name . "...";
 
+        $values = $this->normalizeEnumValues($values);
+
         $code = [];
         $code[] = '<?php';
         $code[] = '';
@@ -141,6 +147,7 @@ class ModelGenerator
         $code[] = '        return [';
 
         foreach ($modelSchema['properties'] as $name => $propDefinition) {
+            $propDefinition = $this->normalizeSchemaProperty($propDefinition);
             $model = 'null';
             $enum = 'null';
             $array = 'false';
@@ -171,6 +178,7 @@ class ModelGenerator
     protected function generateFields(string $type, array $modelSchema, array &$code): void
     {
         foreach ($modelSchema['properties'] as $name => $propDefinition) {
+            $propDefinition = $this->normalizeSchemaProperty($propDefinition);
             if (isset($propDefinition['type']) && ! isset($propDefinition['enum'])) {
                 $propType = static::$propTypeMapping[$propDefinition['type']];
                 if ($propType == 'array' && isset($propDefinition['items']['$ref'])) {
@@ -214,6 +222,7 @@ class ModelGenerator
     protected function generateDateTimeGetters(array $modelSchema, array &$code): void
     {
         foreach ($modelSchema['properties'] as $name => $propDefinition) {
+            $propDefinition = $this->normalizeSchemaProperty($propDefinition);
             if (strpos($name, 'DateTime') === false) {
                 continue;
             }
@@ -354,6 +363,7 @@ class ModelGenerator
         $fields = [];
 
         foreach ($modelSchema['properties'] as $propName => $propDefinition) {
+            $propDefinition = $this->normalizeSchemaProperty($propDefinition);
             $isArray = null;
             if (isset($propDefinition['$ref'])) {
                 $propType = $this->getType($propDefinition['$ref']);
@@ -375,7 +385,7 @@ class ModelGenerator
 
             $subPropName = array_keys($this->specs['components']['schemas'][$propType]['properties'])[0];
 
-            $subProp = $this->specs['components']['schemas'][$propType]['properties'][$subPropName];
+            $subProp = $this->normalizeSchemaProperty($this->specs['components']['schemas'][$propType]['properties'][$subPropName]);
             if (isset($subProp['type'])) {
                 $subPropType = $subProp['type'];
             } elseif (isset($subProp['$ref'])) {
@@ -425,5 +435,19 @@ class ModelGenerator
     {
         $wordWrapped = wordwrap(strip_tags($comment), $maxLength - strlen($linePrefix));
         return $linePrefix . trim(str_replace("\n", "\n{$linePrefix}", $wordWrapped));
+    }
+
+    /**
+     * Some upstream specs (observed in shared.json) declare a string enum whose single value is a
+     * comma-separated list, e.g. `enum: ["A, B, C"]`. Split that into individual enum cases so the
+     * generated PHP enum stays faithful to the intended set of values.
+     */
+    protected function normalizeEnumValues(array $values): array
+    {
+        if (count($values) === 1 && str_contains($values[0], ',')) {
+            return array_map('trim', explode(',', $values[0]));
+        }
+
+        return $values;
     }
 }

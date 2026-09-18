@@ -1,0 +1,159 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Delivery Promise API",
+        "version": "1.0.0",
+        "description": "The API for the delivery promise resource.",
+        "termsOfService": "https://api.bol.com/retailer/public/Retailer-API/legal/terms-of-service.html",
+        "contact": {
+            "name": "developers.bol.com",
+            "url": "https://developers.bol.com"
+        },
+        "x-logo": {
+            "url": "https://api.bol.com/retailer/public/Retailer-API/_images/bolcom_logo.png",
+            "altText": "bol. logo"
+        }
+    },
+    "paths": {
+        "/retailer/delivery-promise/profiles": {
+            "get": {
+                "tags": [
+                    "Profiles"
+                ],
+                "summary": "Get delivery promise profiles",
+                "description": "Retrieves a list of delivery promise profiles for the authenticated retailer. A profile defines the retailer handover days with latest order times, expected carrier delivery time and carrier working days",
+                "operationId": "get-delivery-promise-profiles",
+                "x-bol-scopes": [
+                    "retailer",
+                    "delivery-promise.read"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The request was successfully processed, returning a list of profiles.",
+                        "content": {
+                            "application/vnd.delivery-promise.v1+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProfilesResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "../common/responses.yaml#/components/responses/403"
+                    },
+                    "500": {
+                        "$ref": "../common/responses.yaml#/components/responses/500"
+                    },
+                    "503": {
+                        "$ref": "../common/responses.yaml#/components/responses/503"
+                    },
+                    "504": {
+                        "$ref": "../common/responses.yaml#/components/responses/504"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ProfilesResponse": {
+                "type": "object",
+                "required": [
+                    "profiles"
+                ],
+                "properties": {
+                    "profiles": {
+                        "type": "array",
+                        "description": "List of delivery promise profiles",
+                        "items": {
+                            "$ref": "#/components/schemas/Profile"
+                        }
+                    }
+                }
+            },
+            "Profile": {
+                "type": "object",
+                "required": [
+                    "profileId",
+                    "name",
+                    "isDefault",
+                    "workingDays"
+                ],
+                "properties": {
+                    "profileId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Unique identifier of the delivery promise profile",
+                        "example": "b864f14f-fbe3-45d2-b09b-3e4c4ebe5b67"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Human-readable name of the profile",
+                        "example": "Mijn standaard leverbelofte"
+                    },
+                    "isDefault": {
+                        "type": "boolean",
+                        "description": "Indicates whether this profile is the default",
+                        "example": true
+                    },
+                    "workingDays": {
+                        "type": "array",
+                        "description": "List of working days",
+                        "items": {
+                            "$ref": "#/components/schemas/WorkingDay"
+                        }
+                    }
+                }
+            },
+            "WorkingDay": {
+                "type": "object",
+                "required": [
+                    "dayOfWeek",
+                    "isDeliveryDay",
+                    "minCarrierDeliveryDays",
+                    "maxCarrierDeliveryDays"
+                ],
+                "properties": {
+                    "dayOfWeek": {
+                        "type": "string",
+                        "enum": [
+                            "MONDAY",
+                            "TUESDAY",
+                            "WEDNESDAY",
+                            "THURSDAY",
+                            "FRIDAY",
+                            "SATURDAY",
+                            "SUNDAY"
+                        ],
+                        "description": "The day of the week",
+                        "example": "MONDAY"
+                    },
+                    "isDeliveryDay": {
+                        "type": "boolean",
+                        "description": "Indicates whether the carrier is delivering orders to the customer on this day",
+                        "example": true
+                    },
+                    "latestOrderTime": {
+                        "type": "string",
+                        "description": "The daily cut-off time (format HH:mm) for handing orders over to the carrier. Orders placed before the cut-off time are expected to be handed over the same day; orders placed after the cut-off are handed over on the next eligible handover day. If null, the day is considered to be a non-handover day.",
+                        "example": "23:00"
+                    },
+                    "minCarrierDeliveryDays": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 1,
+                        "description": "The minimum number of days for the carrier to deliver the package. Defaults to 1.",
+                        "example": 1
+                    },
+                    "maxCarrierDeliveryDays": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 1,
+                        "description": "The maximum number of days for the carrier to deliver the package. Defaults to 1.",
+                        "example": 1
+                    }
+                }
+            }
+        }
+    }
+}

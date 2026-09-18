@@ -6,6 +6,8 @@ use Exception;
 
 class ClientGenerator
 {
+    use SchemaPropertyNormalizer;
+
     protected $specs;
 
     protected static $overrideMethodNames = [
@@ -32,7 +34,9 @@ class ClientGenerator
     public function __construct()
     {
         $retailer = (new SwaggerSpecs())->load(__DIR__ . '/retailer.json')
-            ->merge((new SwaggerSpecs())->load(__DIR__ . '/shared.json'));
+            ->merge((new SwaggerSpecs())->load(__DIR__ . '/shared.json'))
+            ->merge((new SwaggerSpecs())->load(__DIR__ . '/economic-operators.json'))
+            ->merge((new SwaggerSpecs())->load(__DIR__ . '/delivery-promise.json'));
         $this->specs = $retailer->getSpecs();
     }
 
@@ -102,7 +106,7 @@ class ClientGenerator
         $arguments = $this->extractArguments($methodDefinition);
 
         $nullableReturnType = false;
-        if (isset($methodDefinition['responses']['404'])) {
+        if ($this->hasInlined404Response($methodDefinition['responses'])) {
             $nullableReturnType = true;
             if (! isset($returnType['property'])) {
                 $returnType['doc'] = $returnType['doc'] . '|null';
@@ -280,7 +284,7 @@ class ClientGenerator
                 'description' => $parameter['description'] ?? null,
                 'in' => $parameter['in'],
                 'paramName' => null,
-                'required' => $parameter['required']
+                'required' => $parameter['required'] ?? ($parameter['in'] === 'path')
             ];
 
             if ($parameter['in'] == 'query' && isset($parameter['schema']['$ref'])) {
@@ -346,7 +350,7 @@ class ClientGenerator
                 $refSchema = $this->specs['components']['schemas'][$apiType];
                 if (count($refSchema['properties']) == 1) {
                     $property = array_keys($refSchema['properties'])[0];
-                    $propSchema = $refSchema['properties'][$property];
+                    $propSchema = $this->normalizeSchemaProperty($refSchema['properties'][$property]);
 
                     if (isset($propSchema['type']) && $propSchema['type'] == 'array') {
                         $itemsType = $this->getType($propSchema['items']['$ref']);
@@ -518,7 +522,7 @@ class ClientGenerator
                 } else {
                     $type = '\'string\'';
                 }
-            } elseif ($httpStatus == '404') {
+            } elseif ($httpStatus == '404' && $this->hasInlined404Response($responses)) {
                 $type = '\'null\'';
             }
             if ($type !== null) {
@@ -549,11 +553,10 @@ class ClientGenerator
             $refSchema = $this->specs['components']['schemas'][$apiType];
             if (count($refSchema['properties']) == 1) {
                 $property = array_keys($refSchema['properties'])[0];
-                if (isset($refSchema['properties'][$property]['type'], $refSchema['properties'][$property]['items']['$ref']) && $refSchema['properties'][$property]['type'] == 'array') {
+                $propertySchema = $this->normalizeSchemaProperty($refSchema['properties'][$property]);
+                if (isset($propertySchema['type'], $propertySchema['items']['$ref']) && $propertySchema['type'] == 'array') {
                     return [
-                        'doc' => 'Model\\' . $this->getType(
-                                $refSchema['properties'][$property]['items']['$ref']
-                            ) . '[]',
+                        'doc' => 'Model\\' . $this->getType($propertySchema['items']['$ref']) . '[]',
                         'php' => 'array',
                         'property' => $property
                     ];
@@ -590,5 +593,19 @@ class ClientGenerator
     {
         $wordWrapped = wordwrap(strip_tags($comment), $maxLength - strlen($linePrefix));
         return $linePrefix . trim(str_replace("\n", "\n{$linePrefix}", $wordWrapped));
+    }
+
+    /**
+     * A 404 response participates in return-type nullability only when it declares an inline
+     * body schema. Registry specs (e.g. economic-operators) reference shared 4xx responses via
+     * an external `$ref`, so those must not be treated as "resource missing" returns.
+     */
+    protected function hasInlined404Response(array $responses): bool
+    {
+        if (! isset($responses['404'])) {
+            return false;
+        }
+
+        return ! isset($responses['404']['$ref']);
     }
 }
