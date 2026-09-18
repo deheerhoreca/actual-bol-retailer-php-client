@@ -29,7 +29,9 @@ class ModelGenerator
         $retailer = (new SwaggerSpecs())->load(__DIR__ . '/retailer.json')
             ->merge((new SwaggerSpecs())->load(__DIR__ . '/shared.json'))
             ->merge((new SwaggerSpecs())->load(__DIR__ . '/economic-operators.json'))
-            ->merge((new SwaggerSpecs())->load(__DIR__ . '/delivery-promise.json'));
+            ->merge((new SwaggerSpecs())->load(__DIR__ . '/delivery-promise.json'))
+            ->merge((new SwaggerSpecs())->load(__DIR__ . '/offers-v11.json'))
+            ->merge((new SwaggerSpecs())->load(__DIR__ . '/retailers-v11.json'));
 
         $this->specs = $retailer->getSpecs();
     }
@@ -433,7 +435,10 @@ class ModelGenerator
 
     protected function wrapComment(string $comment, string $linePrefix, int $maxLength = 120): string
     {
-        $wordWrapped = wordwrap(strip_tags($comment), $maxLength - strlen($linePrefix));
+        // collapse all whitespace runs (e.g. newlines and indentation from folded YAML scalars,
+        // or spacing in markdown tables) to avoid trailing whitespace in the generated doc blocks
+        $comment = preg_replace('/\s+/', ' ', strip_tags($comment));
+        $wordWrapped = wordwrap($comment, $maxLength - strlen($linePrefix));
         return $linePrefix . trim(str_replace("\n", "\n{$linePrefix}", $wordWrapped));
     }
 

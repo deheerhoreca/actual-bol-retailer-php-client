@@ -135,7 +135,7 @@ class SpecNormalizer
         return $response;
     }
 
-    private function normalizeSchema(array $schema, string $documentUri, string $collisionPrefix): array
+    private function normalizeSchema(array $schema, string $documentUri, string $collisionPrefix, string $nameHint = ''): array
     {
         $normalized = $schema;
 
@@ -144,13 +144,19 @@ class SpecNormalizer
                 $normalized['properties'][$propertyName] = $this->normalizeSchemaReference(
                     $propertySchema,
                     $documentUri,
-                    $collisionPrefix
+                    $collisionPrefix,
+                    $nameHint === '' ? '' : $nameHint . ucfirst($propertyName)
                 );
             }
         }
 
         if (isset($normalized['items'])) {
-            $normalized['items'] = $this->normalizeSchemaReference($normalized['items'], $documentUri, $collisionPrefix);
+            $normalized['items'] = $this->normalizeSchemaReference(
+                $normalized['items'],
+                $documentUri,
+                $collisionPrefix,
+                $this->singularize($nameHint)
+            );
         }
 
         foreach (['allOf', 'oneOf', 'anyOf'] as $compositionKeyword) {
@@ -166,10 +172,14 @@ class SpecNormalizer
         return $normalized;
     }
 
-    private function normalizeSchemaReference(array $schema, string $documentUri, string $collisionPrefix): array
+    private function normalizeSchemaReference(array $schema, string $documentUri, string $collisionPrefix, string $nameHint = ''): array
     {
         if (isset($schema['$ref'])) {
             [$resolvedDocumentUri, $targetSchemaName, $targetSchema] = $this->resolveSchemaReference($schema['$ref'], $documentUri);
+
+            if ($this->isFlattenableOneOfSchema($targetSchema)) {
+                $targetSchema = $this->flattenOneOfSchema($targetSchema, $resolvedDocumentUri);
+            }
 
             if ($this->isComplexSchema($targetSchema)) {
                 $localSchemaName = $this->ensureSchemaComponent(
@@ -187,7 +197,48 @@ class SpecNormalizer
             return $this->normalizeSchema($targetSchema, $resolvedDocumentUri, $collisionPrefix);
         }
 
-        return $this->normalizeSchema($schema, $documentUri, $collisionPrefix);
+        // Hoist inline (anonymous) object schemas into a named component, as the generated
+        // models only support `$ref` for nested models. The name is derived from the parent
+        // schema and property names (e.g. 'FulfilmentDeliveryPromise').
+        if ($nameHint !== '' && $this->isComplexSchema($schema)) {
+            $localSchemaName = $this->ensureInlineSchemaComponent($documentUri, $nameHint, $schema, $collisionPrefix);
+
+            return [
+                '$ref' => '#/components/schemas/' . $localSchemaName,
+            ];
+        }
+
+        return $this->normalizeSchema($schema, $documentUri, $collisionPrefix, $nameHint);
+    }
+
+    private function ensureInlineSchemaComponent(
+        string $documentUri,
+        string $nameHint,
+        array $schema,
+        string $collisionPrefix
+    ): string {
+        $schemaReference = $documentUri . '#inline:' . $nameHint;
+
+        if (isset($this->schemaNameMap[$schemaReference])) {
+            return $this->schemaNameMap[$schemaReference];
+        }
+
+        $localSchemaName = $this->allocateSchemaName($nameHint, $collisionPrefix);
+        $this->schemaNameMap[$schemaReference] = $localSchemaName;
+        $this->outputSchemas[$localSchemaName] = [];
+
+        $this->outputSchemas[$localSchemaName] = $this->normalizeSchema($schema, $documentUri, $collisionPrefix, $localSchemaName);
+
+        return $localSchemaName;
+    }
+
+    private function singularize(string $name): string
+    {
+        if (strlen($name) > 1 && str_ends_with($name, 's') && ! str_ends_with($name, 'ss')) {
+            return substr($name, 0, -1);
+        }
+
+        return $name;
     }
 
     private function ensureSchemaComponent(
@@ -206,7 +257,7 @@ class SpecNormalizer
         $this->schemaNameMap[$schemaReference] = $localSchemaName;
         $this->outputSchemas[$localSchemaName] = [];
 
-        $this->outputSchemas[$localSchemaName] = $this->normalizeSchema($schema, $documentUri, $collisionPrefix);
+        $this->outputSchemas[$localSchemaName] = $this->normalizeSchema($schema, $documentUri, $collisionPrefix, $localSchemaName);
 
         return $localSchemaName;
     }
@@ -314,6 +365,52 @@ class SpecNormalizer
     private function isComplexSchema(array $schema): bool
     {
         return isset($schema['properties']) || (($schema['type'] ?? null) === 'object');
+    }
+
+    /**
+     * A polymorphic schema consisting solely of a top-level `oneOf` (e.g. the v11 Offers API
+     * `Condition` and `Reason` schemas) cannot be represented by the generated models, which
+     * expect a flat list of properties. Such a schema is flattened into a single object schema
+     * containing the union of the properties of all of its variants.
+     */
+    private function isFlattenableOneOfSchema(array $schema): bool
+    {
+        return isset($schema['oneOf']) && ! $this->isComplexSchema($schema);
+    }
+
+    private function flattenOneOfSchema(array $schema, string $documentUri): array
+    {
+        $flattened = [
+            'type' => 'object',
+            'properties' => [],
+        ];
+
+        if (isset($schema['description'])) {
+            $flattened['description'] = $schema['description'];
+        }
+
+        foreach ($schema['oneOf'] as $subSchema) {
+            if (isset($subSchema['$ref'])) {
+                [, , $subSchema] = $this->resolveSchemaReference($subSchema['$ref'], $documentUri);
+            }
+
+            foreach ($subSchema['properties'] ?? [] as $propertyName => $propertySchema) {
+                if (! isset($flattened['properties'][$propertyName])) {
+                    $flattened['properties'][$propertyName] = $propertySchema;
+                    continue;
+                }
+
+                // Union enum values of same-named properties defined by multiple variants
+                $existing = $flattened['properties'][$propertyName];
+                if (isset($existing['enum'], $propertySchema['enum'])) {
+                    $flattened['properties'][$propertyName]['enum'] = array_values(array_unique(
+                        array_merge($existing['enum'], $propertySchema['enum'])
+                    ));
+                }
+            }
+        }
+
+        return $flattened;
     }
 
     private function getGeneratedType(string $schemaName): string

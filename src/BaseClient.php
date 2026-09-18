@@ -451,9 +451,26 @@ class BaseClient
 
         // pass through query parameters without null values
         if (isset($options['query'])) {
-            $httpOptions['query'] = array_filter($options['query'], function ($value) {
+            $query = array_filter($options['query'], function ($value) {
                 return $value !== null;
             });
+
+            // serialize booleans as 'true'/'false' as expected by the bol. API
+            $query = array_map(function ($value) {
+                return is_bool($value) ? ($value ? 'true' : 'false') : $value;
+            }, $query);
+
+            if (array_filter($query, 'is_array') !== []) {
+                // serialize array values as repeated keys (e.g. 'eans=a&eans=b') instead of
+                // the default indexed brackets ('eans[0]=a'), as expected by the bol. API
+                $httpOptions['query'] = preg_replace(
+                    '/%5B\d+%5D=/',
+                    '=',
+                    http_build_query($query, '', '&', PHP_QUERY_RFC3986)
+                );
+            } else {
+                $httpOptions['query'] = $query;
+            }
         }
 
         // pass through multipart parameters without null values

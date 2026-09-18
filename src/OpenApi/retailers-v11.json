@@ -1,0 +1,900 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Retailers API",
+        "description": "Enables users to fetch retailer information, ratings, performance status and performance KPI score.",
+        "version": "11.1.0"
+    },
+    "paths": {
+        "/retailer/retailers/{retailer-id}": {
+            "get": {
+                "summary": "Retrieves the retailer information for a retailer.",
+                "description": "This endpoint allows retailers to retrieve general retailer information.",
+                "operationId": "retailer-information-by-retailer-id",
+                "tags": [
+                    "Retailer"
+                ],
+                "x-badges": [
+                    {
+                        "name": "BETA",
+                        "position": "after",
+                        "color": "#0000A4"
+                    }
+                ],
+                "x-bol-scopes": [
+                    "retailer",
+                    "retailer-info.read"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "retailer-id",
+                        "description": "The ID of the retailer which information belongs to. Use 'current' to retrieve information of the currently authenticated retailer account.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "description": "Represents the retailer who owns the economic operator.",
+                            "example": "1"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The request was successful, and the retailer information has been retrieved successfully.",
+                        "content": {
+                            "application/vnd.retailer.v11+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RetailerInformation"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "../common/responses.yaml#/components/responses/400_BAD_REQUEST"
+                    },
+                    "403": {
+                        "$ref": "../common/responses.yaml#/components/responses/403_FORBIDDEN"
+                    },
+                    "404": {
+                        "$ref": "../common/responses.yaml#/components/responses/404_NOT_FOUND"
+                    },
+                    "500": {
+                        "$ref": "../common/responses.yaml#/components/responses/500_INTERNAL_SERVER_ERROR"
+                    },
+                    "503": {
+                        "$ref": "../common/responses.yaml#/components/responses/503_SERVICE_UNAVAILABLE"
+                    },
+                    "504": {
+                        "$ref": "../common/responses.yaml#/components/responses/504_GATEWAY_TIMEOUT"
+                    }
+                }
+            }
+        },
+        "/retailer/retailers/{retailer-id}/ratings": {
+            "get": {
+                "summary": "Retrieves the rating information for a retailer.",
+                "description": "This endpoint allows retailers to retrieve retailer ratings information.",
+                "operationId": "retailer-ratings",
+                "tags": [
+                    "Retailer"
+                ],
+                "x-badges": [
+                    {
+                        "name": "BETA",
+                        "position": "after",
+                        "color": "#0000A4"
+                    }
+                ],
+                "x-bol-scopes": [
+                    "retailer",
+                    "retailer-info.read"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "retailer-id",
+                        "description": "The ID of the retailer which the rating belongs to. Use 'current' to retrieve ratings of the currently authenticated retailer account.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "description": "Represents the retailer who owns the economic operator.",
+                            "example": "1"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The request was successful, and the retailer ratings have been retrieved successfully.",
+                        "content": {
+                            "application/vnd.retailer.v11+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RetailerRatings"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "../common/responses.yaml#/components/responses/400_BAD_REQUEST"
+                    },
+                    "403": {
+                        "$ref": "../common/responses.yaml#/components/responses/403_FORBIDDEN"
+                    },
+                    "404": {
+                        "$ref": "../common/responses.yaml#/components/responses/404_NOT_FOUND"
+                    },
+                    "500": {
+                        "$ref": "../common/responses.yaml#/components/responses/500_INTERNAL_SERVER_ERROR"
+                    },
+                    "503": {
+                        "$ref": "../common/responses.yaml#/components/responses/503_SERVICE_UNAVAILABLE"
+                    },
+                    "504": {
+                        "$ref": "../common/responses.yaml#/components/responses/504_GATEWAY_TIMEOUT"
+                    }
+                }
+            }
+        },
+        "/retailer/retailers/performance-status": {
+            "get": {
+                "summary": "Retrieves the current performance status for authenticated retailer.",
+                "description": "This endpoint allows retailers to retrieve current performance status information.",
+                "operationId": "retailer-performance-status",
+                "tags": [
+                    "Retailer"
+                ],
+                "x-badges": [
+                    {
+                        "name": "BETA",
+                        "position": "after",
+                        "color": "#0000A4"
+                    }
+                ],
+                "x-bol-scopes": [
+                    "retailer",
+                    "retailer-info.read"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The request was successful, and the performance status has been retrieved successfully.",
+                        "content": {
+                            "application/vnd.retailer.v11+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PerformanceStatus"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "../common/responses.yaml#/components/responses/400_BAD_REQUEST"
+                    },
+                    "403": {
+                        "$ref": "../common/responses.yaml#/components/responses/403_FORBIDDEN"
+                    },
+                    "500": {
+                        "$ref": "../common/responses.yaml#/components/responses/500_INTERNAL_SERVER_ERROR"
+                    },
+                    "503": {
+                        "$ref": "../common/responses.yaml#/components/responses/503_SERVICE_UNAVAILABLE"
+                    },
+                    "504": {
+                        "$ref": "../common/responses.yaml#/components/responses/504_GATEWAY_TIMEOUT"
+                    }
+                }
+            }
+        },
+        "/retailer/retailers/kpi-scores": {
+            "get": {
+                "summary": "Retrieves the KPI scores of the current retailer for a given week.",
+                "description": "This endpoint allows retailers to retrieve KPI score information.",
+                "operationId": "retailer-kpi-scores",
+                "tags": [
+                    "Retailer"
+                ],
+                "x-badges": [
+                    {
+                        "name": "BETA",
+                        "position": "after",
+                        "color": "#0000A4"
+                    }
+                ],
+                "x-bol-scopes": [
+                    "retailer",
+                    "retailer-info.read"
+                ],
+                "parameters": [
+                    {
+                        "name": "kpi",
+                        "in": "query",
+                        "description": "Service norm name for the score.",
+                        "required": true,
+                        "example": "FULFILMENT",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "CANCELLATIONS",
+                                "CASE_ITEM_RATIO",
+                                "FULFILMENT",
+                                "HANDOVER",
+                                "ON_TIME",
+                                "RESPONSE_TIME",
+                                "RETURNS",
+                                "REVIEWS",
+                                "TRACK_AND_TRACE"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "week",
+                        "in": "query",
+                        "description": "The week number for which the score is requested in the ISO-8601 format 'YYYY-WW'.",
+                        "example": "2025-01",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The request was successful, and the kpi score have been retrieved successfully.",
+                        "content": {
+                            "application/vnd.retailer.v11+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/KpiScore"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "../common/responses.yaml#/components/responses/400_BAD_REQUEST"
+                    },
+                    "403": {
+                        "$ref": "../common/responses.yaml#/components/responses/403_FORBIDDEN"
+                    },
+                    "500": {
+                        "$ref": "../common/responses.yaml#/components/responses/500_INTERNAL_SERVER_ERROR"
+                    },
+                    "503": {
+                        "$ref": "../common/responses.yaml#/components/responses/503_SERVICE_UNAVAILABLE"
+                    },
+                    "504": {
+                        "$ref": "../common/responses.yaml#/components/responses/504_GATEWAY_TIMEOUT"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "RetailerInformation": {
+                "description": "Represents general retailer's shop related information.",
+                "required": [
+                    "retailerId",
+                    "displayName",
+                    "registrationDateTime",
+                    "companyName",
+                    "vatNumber",
+                    "countryAvailability"
+                ],
+                "properties": {
+                    "retailerId": {
+                        "type": "string",
+                        "description": "Represents the retailer who owns the economic operator.",
+                        "example": "1"
+                    },
+                    "displayName": {
+                        "type": "string",
+                        "description": "The shop name of the retailer.",
+                        "example": "The shop name"
+                    },
+                    "companyName": {
+                        "type": "string",
+                        "description": "The official name of the company as registered with the relevant authorities. This name \nis used for identification and legal purposes.\n",
+                        "example": "bol.com"
+                    },
+                    "vatNumber": {
+                        "type": "string",
+                        "description": "A unique identifier for the company's value-added tax (VAT) registration. This number is \nused for tax reporting purposes within the European Union. It typically includes a \ncountry code followed by alphanumeric characters.\n",
+                        "example": "NL123456789B01"
+                    },
+                    "kvkNumber": {
+                        "type": "string",
+                        "description": "The unique registration number assigned to a company by the Dutch Chamber of Commerce \n(Kamer van Koophandel - KVK). This number is required for conducting business in the \nNetherlands.\n",
+                        "example": "12345678"
+                    },
+                    "registrationDateTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-12-04T14:30:00Z",
+                        "description": "A timestamp combining both date and time, represented in ISO 8601 format (e.g., YYYY-MM-DDTHH:mm:ssZ).  Includes timezone information.\n"
+                    },
+                    "countryAvailability": {
+                        "type": "array",
+                        "items": {
+                            "description": "The code of the country",
+                            "type": "string",
+                            "nullable": false,
+                            "enum": [
+                                "NL",
+                                "BE"
+                            ]
+                        }
+                    }
+                }
+            },
+            "RetailerRatings": {
+                "type": "object",
+                "description": "Represents the information about the rating method used to obtain ratings, rating themselves and different types of review counts.",
+                "required": [
+                    "ratingMethod",
+                    "retailerRating",
+                    "retailerReview",
+                    "isTopRetailer"
+                ],
+                "properties": {
+                    "ratingMethod": {
+                        "type": "string",
+                        "description": "An identifier that identifies if the rating is calculated over the past three months or on all reviews for the retailer.",
+                        "example": "ALL_REVIEWS",
+                        "enum": [
+                            "ALL_REVIEWS",
+                            "RECENT_REVIEWS"
+                        ]
+                    },
+                    "retailerRating": {
+                        "$ref": "#/components/schemas/V11RetailerRating"
+                    },
+                    "retailerReview": {
+                        "$ref": "#/components/schemas/V11RetailerReview"
+                    },
+                    "isTopRetailer": {
+                        "type": "boolean",
+                        "description": "Retailer flag if top seller or not.",
+                        "example": true,
+                        "nullable": true
+                    }
+                }
+            },
+            "V11RetailerRating": {
+                "type": "object",
+                "description": "Represents rating on retailer, product, delivery time, shipping and service level.",
+                "required": [
+                    "retailerRating"
+                ],
+                "properties": {
+                    "retailerRating": {
+                        "description": "Retailer general rating.",
+                        "example": 9,
+                        "type": "number",
+                        "minimum": 1,
+                        "maximum": 10
+                    },
+                    "productInformationRating": {
+                        "description": "Retailer product rating.",
+                        "example": 9,
+                        "type": "number",
+                        "minimum": 1,
+                        "maximum": 10,
+                        "nullable": true
+                    },
+                    "deliveryTimeRating": {
+                        "description": "Retailer delivery time rating.",
+                        "example": 9,
+                        "type": "number",
+                        "minimum": 1,
+                        "maximum": 10,
+                        "nullable": true
+                    },
+                    "shippingRating": {
+                        "description": "Retailer shipping rating.",
+                        "example": 9,
+                        "type": "number",
+                        "minimum": 1,
+                        "maximum": 10,
+                        "nullable": true
+                    },
+                    "serviceRating": {
+                        "description": "Retailer service rating.",
+                        "example": 9,
+                        "type": "number",
+                        "minimum": 1,
+                        "maximum": 10,
+                        "nullable": true
+                    }
+                }
+            },
+            "V11RetailerReview": {
+                "type": "object",
+                "description": "Represents positive, negative, neutral and total review count.",
+                "required": [
+                    "totalReviewCount",
+                    "positiveReviewCount",
+                    "neutralReviewCount",
+                    "negativeReviewCount"
+                ],
+                "properties": {
+                    "totalReviewCount": {
+                        "description": "The total amount of customer review during the rating method period.",
+                        "example": 10,
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "approvalPercentage": {
+                        "description": "The percentage of customers that rated the retailer either neutral or positive during the rating method period.",
+                        "example": 80,
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 100
+                    },
+                    "positiveReviewCount": {
+                        "description": "The amount of positive customer reviews during the rating method period.",
+                        "example": 70,
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "neutralReviewCount": {
+                        "description": "The amount of neutral customer reviews during the rating method period.",
+                        "example": 10,
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "negativeReviewCount": {
+                        "description": "The amount of negative customer reviews during the rating method period.",
+                        "example": 10,
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    }
+                }
+            },
+            "PerformanceStatus": {
+                "type": "object",
+                "description": "Represents the retailer's current operational and behavioral performance in the bol platform.",
+                "properties": {
+                    "monitoringSystem": {
+                        "$ref": "#/components/schemas/MonitoringSystem"
+                    },
+                    "policy": {
+                        "$ref": "#/components/schemas/Policy"
+                    },
+                    "qualityScore": {
+                        "$ref": "#/components/schemas/QualityScore"
+                    }
+                }
+            },
+            "MonitoringSystem": {
+                "type": "object",
+                "description": "Represents retailer's current monitoring system name and strike information.",
+                "required": [
+                    "description"
+                ],
+                "properties": {
+                    "description": {
+                        "type": "string",
+                        "description": "Name of the current monitoring system the retailer is in.",
+                        "example": "GroeiStart"
+                    },
+                    "strike": {
+                        "$ref": "#/components/schemas/Strike"
+                    }
+                }
+            },
+            "Strike": {
+                "type": "object",
+                "description": "Represents retailer's strike information.",
+                "required": [
+                    "count",
+                    "weeks",
+                    "monitorPeriod"
+                ],
+                "properties": {
+                    "count": {
+                        "description": "The number of strikes in the current monitoring weeks.",
+                        "example": 0,
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0,
+                        "maximum": 7
+                    },
+                    "weeks": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/StrikeWeekReason"
+                        }
+                    },
+                    "monitorPeriod": {
+                        "$ref": "#/components/schemas/MonitorPeriod"
+                    }
+                }
+            },
+            "StrikeWeekReason": {
+                "type": "object",
+                "description": "Represents the week and KPI(s) for which the retailer under performed.",
+                "required": [
+                    "week",
+                    "reasons"
+                ],
+                "properties": {
+                    "week": {
+                        "type": "string",
+                        "description": "Strike week in the format YYYY-WW (ISO-8601).",
+                        "example": "2025-01"
+                    },
+                    "reasons": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "description": "Name(s) of the underperformed KPI.",
+                            "example": "FULFILMENT",
+                            "enum": [
+                                "CANCELLATIONS",
+                                "FULFILMENT",
+                                "HANDOVER",
+                                "ON_TIME",
+                                "RESPONSE_TIME"
+                            ]
+                        }
+                    }
+                }
+            },
+            "MonitorPeriod": {
+                "type": "object",
+                "description": "Represents start and end week of the monitoring period. Currently 22 weeks.",
+                "required": [
+                    "startWeek",
+                    "endWeek"
+                ],
+                "properties": {
+                    "startWeek": {
+                        "type": "string",
+                        "description": "The start week of the monitor period in the format YYYY-WW (ISO-8601).",
+                        "example": "2025-01"
+                    },
+                    "endWeek": {
+                        "type": "string",
+                        "description": "The end week of the monitor period in the format YYYY-WW (ISO-8601).",
+                        "example": "2025-22"
+                    }
+                }
+            },
+            "Policy": {
+                "type": "object",
+                "description": "Represents policy violation overview.",
+                "required": [
+                    "pointsLeft"
+                ],
+                "properties": {
+                    "pointsLeft": {
+                        "description": "Remaining policy violation points(0-100).",
+                        "example": 90,
+                        "minimum": 0,
+                        "maximum": 100,
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "violations": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PolicyViolation"
+                        }
+                    }
+                }
+            },
+            "PolicyViolation": {
+                "type": "object",
+                "description": "Represents details of all the policy violations and second chance registered in the last 365 days from the current day.",
+                "required": [
+                    "violationId",
+                    "registrationDateTime",
+                    "category",
+                    "subCategory",
+                    "violationType",
+                    "points",
+                    "isProportionalityApplied"
+                ],
+                "properties": {
+                    "violationId": {
+                        "type": "string",
+                        "description": "The unique identifier of a policy violation.",
+                        "example": "blue-210328350"
+                    },
+                    "registrationDateTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-12-04T14:30:00Z",
+                        "description": "A timestamp combining both date and time, represented in ISO 8601 format (e.g., YYYY-MM-DDTHH:mm:ssZ).  Includes timezone information.\n"
+                    },
+                    "category": {
+                        "type": "string",
+                        "description": "Policy violated category name.",
+                        "example": "FORBIDDEN_ASSORTMENT"
+                    },
+                    "subCategory": {
+                        "type": "string",
+                        "description": "Policy violated sub-category name.",
+                        "example": "MISSING_QUALITY_MARK"
+                    },
+                    "violationType": {
+                        "type": "string",
+                        "description": "Type of the policy violation.",
+                        "example": "POINTS_DEDUCTION",
+                        "enum": [
+                            "POINTS_ADDITION",
+                            "POINTS_DEDUCTION",
+                            "WARNING"
+                        ]
+                    },
+                    "points": {
+                        "type": "integer",
+                        "description": "The number of points assigned to the policy violation.",
+                        "example": 10,
+                        "minimum": 0,
+                        "maximum": 100,
+                        "format": "int32"
+                    },
+                    "isProportionalityApplied": {
+                        "type": "boolean",
+                        "description": "Has the number of points deducted been lowered because of proportionality to offer and order count."
+                    },
+                    "preProportionalPoints": {
+                        "type": "integer",
+                        "description": "The number of points that would have been deducted without proportionality correction, as indicated by isProportionalityApplied.",
+                        "example": 20,
+                        "minimum": 0,
+                        "maximum": 100,
+                        "format": "int32"
+                    }
+                }
+            },
+            "QualityScore": {
+                "type": "object",
+                "description": "Represents the retailer's quality score and performance evaluation for the applied period, including the overall score and breakdowns across shipping methods.",
+                "required": [
+                    "yearWeek",
+                    "score",
+                    "shippingMethodScores"
+                ],
+                "properties": {
+                    "yearWeek": {
+                        "type": "string",
+                        "description": "The period a quality score applies to in the format YYYY-WW (ISO-8601).",
+                        "example": "2025-01"
+                    },
+                    "score": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "The quality score. A retailer's top-level outcome for a given period in a score from 0–100.",
+                        "example": 85,
+                        "minimum": 0,
+                        "maximum": 100
+                    },
+                    "shippingMethodScores": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ShippingMethodScore"
+                        }
+                    }
+                }
+            },
+            "ShippingMethodScore": {
+                "type": "object",
+                "description": "Represents the quality score and KPI metrics broken down per shipping method.",
+                "required": [
+                    "shippingMethod",
+                    "score",
+                    "weight",
+                    "kpiScores"
+                ],
+                "properties": {
+                    "shippingMethod": {
+                        "type": "string",
+                        "description": "The logistical method used to fulfill and ship the item: * `SHIPPING_VIA_BOL` - Shipping by bol (Dutch: Vvb - Verzenden via bol) * `LOGISTICS_VIA_BOL` - Fulfilment by bol (FBB) (Dutch: Lvb - Logistiek via bol) * `OWN_SHIPPING` - Fulfilment by retailer (FBR) (Dutch: Eigen verzendwijze)",
+                        "example": "LOGISTICS_VIA_BOL",
+                        "enum": [
+                            "SHIPPING_VIA_BOL",
+                            "LOGISTICS_VIA_BOL",
+                            "OWN_SHIPPING"
+                        ]
+                    },
+                    "score": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "The calculated quality score for this shipping method.",
+                        "example": 90
+                    },
+                    "weight": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "The weight assigned to this fulfilment type's score in the overall quality score calculation.",
+                        "example": 0.5
+                    },
+                    "kpiScores": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/QualityKpiScore"
+                        }
+                    }
+                }
+            },
+            "QualityKpiScore": {
+                "type": "object",
+                "description": "Represents the score for an individual KPI within a shipping method.",
+                "required": [
+                    "kpiName",
+                    "aggregationLevel"
+                ],
+                "properties": {
+                    "kpiName": {
+                        "type": "string",
+                        "description": "Name of the KPI.",
+                        "example": "FULFILMENT"
+                    },
+                    "score": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "The calculated score of the KPI.",
+                        "example": 0.951,
+                        "nullable": true
+                    },
+                    "norm": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "The threshold a KPI value must meet to be considered conforming.",
+                        "example": 0.93,
+                        "nullable": true
+                    },
+                    "aggregationLevel": {
+                        "type": "string",
+                        "description": "The level at which the KPI data is aggregated (RETAILER or PROPOSITION)",
+                        "example": "RETAILER",
+                        "enum": [
+                            "RETAILER",
+                            "PROPOSITION"
+                        ]
+                    }
+                }
+            },
+            "KpiScore": {
+                "type": "object",
+                "description": "Represents the KPI's score, norm and whether the KPI is excluded from strike calculation or not.",
+                "required": [
+                    "kpi",
+                    "norm",
+                    "period",
+                    "excluded"
+                ],
+                "properties": {
+                    "kpi": {
+                        "type": "string",
+                        "description": "Name of the service norm.",
+                        "example": "FULFILMENT",
+                        "enum": [
+                            "CANCELLATIONS",
+                            "CASE_ITEM_RATIO",
+                            "FULFILMENT",
+                            "HANDOVER",
+                            "ON_TIME",
+                            "RESPONSE_TIME",
+                            "RETURNS",
+                            "REVIEWS",
+                            "TRACK_AND_TRACE"
+                        ]
+                    },
+                    "score": {
+                        "$ref": "#/components/schemas/V11Score"
+                    },
+                    "norm": {
+                        "$ref": "#/components/schemas/V11Norm"
+                    },
+                    "period": {
+                        "$ref": "#/components/schemas/Period"
+                    },
+                    "excluded": {
+                        "type": "boolean",
+                        "description": "Flag to represent whether the KPI is excluded from strike calculation or not.",
+                        "example": false
+                    }
+                }
+            },
+            "V11Score": {
+                "type": "object",
+                "description": "The score of the service norm.",
+                "required": [
+                    "denominator",
+                    "numerator",
+                    "value",
+                    "distanceToNorm",
+                    "conformsToNorm"
+                ],
+                "properties": {
+                    "numerator": {
+                        "type": "integer",
+                        "description": "The numerator of the score.",
+                        "example": 2,
+                        "format": "int32"
+                    },
+                    "denominator": {
+                        "type": "integer",
+                        "description": "The denominator of the score.",
+                        "example": 2,
+                        "format": "int32"
+                    },
+                    "value": {
+                        "type": "number",
+                        "description": "The value of the score.",
+                        "example": 1,
+                        "format": "float"
+                    },
+                    "distanceToNorm": {
+                        "type": "number",
+                        "description": "Value representing distance between score and the norm.",
+                        "example": 0.02,
+                        "format": "float"
+                    },
+                    "conformsToNorm": {
+                        "type": "boolean",
+                        "description": "A flag which says whether score conforms to the norm or not.",
+                        "example": true
+                    }
+                }
+            },
+            "V11Norm": {
+                "type": "object",
+                "description": "Represents the norm of the KPI.",
+                "required": [
+                    "condition",
+                    "type",
+                    "value"
+                ],
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "description": "Norm type used for the service norm.",
+                        "example": "FIXED",
+                        "enum": [
+                            "DYNAMIC",
+                            "FIXED"
+                        ]
+                    },
+                    "condition": {
+                        "type": "string",
+                        "description": "Logical operator used for the norm and score.",
+                        "example": "lte"
+                    },
+                    "value": {
+                        "type": "number",
+                        "description": "Actual norm used for the service norm.",
+                        "example": 0.02,
+                        "format": "float"
+                    }
+                }
+            },
+            "Period": {
+                "type": "object",
+                "description": "Period for which the score was calculated.",
+                "required": [
+                    "id",
+                    "type"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Week in the format YYYY-WW (ISO-8601).",
+                        "example": "2025-01"
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "Period type for the score. Currently can only be \"week\".",
+                        "example": "WEEK",
+                        "enum": [
+                            "WEEK"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

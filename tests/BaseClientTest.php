@@ -798,4 +798,59 @@ class BaseClientTest extends TestCase
         $this->assertArrayHasKey('query', $actualOptions);
         $this->assertEquals(['foo' => 'bar'], $actualOptions['query']);
     }
+
+    public function testBooleanQueryParameterIsSentAsTrueFalseInRequest()
+    {
+        $this->authenticateByClientCredentials();
+
+        $actualOptions = null;
+        $response = Message::parseResponse(file_get_contents(__DIR__ . '/Fixtures/http/200-string'));
+        $this->httpClientMock
+            ->expects($this->once())
+            ->method('request')
+            ->willReturnCallback(function ($method, $uri, $options) use ($response, &$actualOptions) {
+                $actualOptions = $options;
+                return $response;
+            });
+
+        $this->client->request('GET', 'foobar', [
+            'query' => [
+                'for-sale' => false,
+                'active' => true,
+            ],
+        ], [
+            '200' => 'string'
+        ]);
+
+        $this->assertArrayHasKey('query', $actualOptions);
+        $this->assertEquals(['for-sale' => 'false', 'active' => 'true'], $actualOptions['query']);
+    }
+
+    public function testArrayQueryParameterIsSentAsRepeatedKeysInRequest()
+    {
+        $this->authenticateByClientCredentials();
+
+        $actualOptions = null;
+        $response = Message::parseResponse(file_get_contents(__DIR__ . '/Fixtures/http/200-string'));
+        $this->httpClientMock
+            ->expects($this->once())
+            ->method('request')
+            ->willReturnCallback(function ($method, $uri, $options) use ($response, &$actualOptions) {
+                $actualOptions = $options;
+                return $response;
+            });
+
+        $this->client->request('GET', 'foobar', [
+            'query' => [
+                'eans' => ['0000007740404', '0000007740405'],
+                'foo' => 'bar',
+                'empty' => [],
+            ],
+        ], [
+            '200' => 'string'
+        ]);
+
+        $this->assertArrayHasKey('query', $actualOptions);
+        $this->assertEquals('eans=0000007740404&eans=0000007740405&foo=bar', $actualOptions['query']);
+    }
 }
