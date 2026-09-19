@@ -109,17 +109,18 @@ class ClientGenerator
 
         $nullableReturnType = false;
         $emptyCollectionOnNull = false;
+        $unwrapsCollection = ! empty($returnType['unwrapsCollection']);
         if ($this->hasInlined404Response($methodDefinition['responses'])) {
             $nullableReturnType = true;
-            $emptyCollectionOnNull = isset($returnType['property']);
-            if (! isset($returnType['property']) && $returnType['php'] !== 'void') {
+            $emptyCollectionOnNull = $unwrapsCollection;
+            if (! $unwrapsCollection && $returnType['php'] !== 'void') {
                 $returnType = $this->makeReturnTypeNullable($returnType);
             }
         }
 
         if ($this->hasNoContentSuccessResponse($methodDefinition['responses']) && $returnType['php'] !== 'void') {
             $nullableReturnType = true;
-            if (isset($returnType['property'])) {
+            if ($unwrapsCollection) {
                 $emptyCollectionOnNull = true;
             } else {
                 $returnType = $this->makeReturnTypeNullable($returnType);
@@ -589,7 +590,8 @@ class ClientGenerator
                     return [
                         'doc' => 'Model\\' . $this->getType($propertySchema['items']['$ref']) . '[]',
                         'php' => 'array',
-                        'property' => $property
+                        'property' => $property,
+                        'unwrapsCollection' => true,
                     ];
                 }
             }
