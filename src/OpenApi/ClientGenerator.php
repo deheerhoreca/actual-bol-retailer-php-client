@@ -669,7 +669,7 @@ class ClientGenerator
     {
         $statusCode = strtoupper($statusCode);
 
-        if (preg_match('/^2[\dX]{2}$/', $statusCode) === 1) {
+        if (preg_match('/^2[\dX]*$/', $statusCode) === 1) {
             return true;
         }
 
