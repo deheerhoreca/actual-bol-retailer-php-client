@@ -66,4 +66,61 @@ class ClientGeneratorTest extends TestCase
         $this->assertStringContainsString('return $result === null ? null : $result->value;', $code);
         $this->assertStringNotContainsString('return $result === null ? [] : $result->value;', $code);
     }
+
+    public function testWildcardNoContentSuccessResponseMakesReturnTypeNullable(): void
+    {
+        $generator = new class () extends ClientGenerator {
+            private array $returnTypeOverride = [];
+
+            public function __construct()
+            {
+            }
+
+            public function generateMethodForTest(array $responses, array $returnType): string
+            {
+                $this->returnTypeOverride = $returnType;
+                $this->specs = [
+                    'paths' => [
+                        '/test' => [
+                            'get' => [
+                                'operationId' => 'get-test',
+                                'summary' => 'Get test',
+                                'responses' => $responses,
+                            ],
+                        ],
+                    ],
+                ];
+
+                $code = [];
+                $this->generateMethod('/test', 'get', $code);
+
+                return implode("\n", $code);
+            }
+
+            protected function getReturnType(array $responses): array
+            {
+                return $this->returnTypeOverride;
+            }
+        };
+
+        $code = $generator->generateMethodForTest([
+            '200' => [
+                'content' => [
+                    'application/json' => [
+                        'schema' => [
+                            '$ref' => '#/components/schemas/TestModel',
+                        ],
+                    ],
+                ],
+            ],
+            '2xx' => [
+                'description' => 'No content',
+            ],
+        ], [
+            'doc' => 'Model\\TestModel',
+            'php' => 'Model\\TestModel',
+        ]);
+
+        $this->assertStringContainsString('public function getTest(): ?Model\\TestModel', $code);
+    }
 }
