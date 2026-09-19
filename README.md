@@ -218,3 +218,4 @@ composer run-script generate-models
 - The v11 Offers API uses polymorphic schemas (a top-level `oneOf` with a discriminator, e.g. 'Condition' and 'Reason'). As the generated models only support a flat list of properties, these schemas are flattened into a single model containing the union of the properties of all variants.
 - Some v11 schemas contain inline (anonymous) nested object schemas (e.g. 'Fulfilment.deliveryPromise'). These are hoisted into named components ('V11FulfilmentDeliveryPromise') during spec normalization, as the generated models only support `$ref` for nested models.
 - The v11 'delete-offer' and 'update-offer' operations only specify a 204 'No Content' response; the generated methods for those operations return `void`.
+- Some operations can return either a 200 response body or a 204 'No Content' success response. The generator marks those methods as nullable and adds `204 => 'null'` to the response map.
