@@ -119,7 +119,11 @@ class ClientGenerator
 
         if ($this->hasNoContentSuccessResponse($methodDefinition['responses']) && $returnType['php'] !== 'void') {
             $nullableReturnType = true;
-            $returnType = $this->makeReturnTypeNullable($returnType);
+            if (isset($returnType['property'])) {
+                $emptyCollectionOnNull = true;
+            } else {
+                $returnType = $this->makeReturnTypeNullable($returnType);
+            }
         }
 
         $argumentsList = $this->getArgumentsList($arguments);
