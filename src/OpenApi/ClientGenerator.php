@@ -647,22 +647,17 @@ class ClientGenerator
 
     protected function hasNoContentSuccessResponse(array $responses): bool
     {
-        $hasPayloadSuccess = false;
-        $hasNoContentSuccess = false;
+        if (! isset($responses['204'])) {
+            return false;
+        }
 
-        foreach ($responses as $statusCode => $response) {
-            if (! $this->isSuccessfulResponseStatus($statusCode)) {
-                continue;
-            }
-
-            if ($this->isNoContentSuccessResponse($statusCode, $response)) {
-                $hasNoContentSuccess = true;
-            } else {
-                $hasPayloadSuccess = true;
+        foreach (array_keys($responses) as $statusCode) {
+            if ($statusCode !== '204' && $this->isSuccessfulResponseStatus($statusCode)) {
+                return true;
             }
         }
 
-        return $hasNoContentSuccess && $hasPayloadSuccess;
+        return false;
     }
 
     protected function isSuccessfulResponseStatus(string $statusCode): bool
@@ -676,20 +671,7 @@ class ClientGenerator
         return false;
     }
 
-    protected function isNoContentSuccessResponse(string $statusCode, array $response): bool
-    {
-        $statusCode = strtoupper($statusCode);
 
-        if ($statusCode === '204') {
-            return true;
-        }
-
-        if (str_contains($statusCode, 'X')) {
-            return empty($response['content']);
-        }
-
-        return false;
-    }
 
     protected function makeReturnTypeNullable(array $returnType): array
     {

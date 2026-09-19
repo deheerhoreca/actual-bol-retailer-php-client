@@ -67,7 +67,7 @@ class ClientGeneratorTest extends TestCase
         $this->assertStringNotContainsString('return $result === null ? [] : $result->value;', $code);
     }
 
-    public function testWildcardNoContentSuccessResponseMakesReturnTypeNullable(): void
+    public function testWildcardPayloadSuccessResponseMakesReturnTypeNullable(): void
     {
         $generator = new class () extends ClientGenerator {
             private array $returnTypeOverride = [];
@@ -104,7 +104,7 @@ class ClientGeneratorTest extends TestCase
         };
 
         $code = $generator->generateMethodForTest([
-            '200' => [
+            '2xx' => [
                 'content' => [
                     'application/json' => [
                         'schema' => [
@@ -113,7 +113,7 @@ class ClientGeneratorTest extends TestCase
                     ],
                 ],
             ],
-            '2xx' => [
+            '204' => [
                 'description' => 'No content',
             ],
         ], [
