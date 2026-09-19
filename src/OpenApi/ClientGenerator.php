@@ -645,7 +645,17 @@ class ClientGenerator
 
     protected function hasNoContentSuccessResponse(array $responses): bool
     {
-        return isset($responses['204']) && (isset($responses['200']) || isset($responses['201']) || isset($responses['202']) || isset($responses['207']));
+        if (! isset($responses['204'])) {
+            return false;
+        }
+
+        foreach (array_keys($responses) as $statusCode) {
+            if ($statusCode !== '204' && is_numeric($statusCode) && (int) $statusCode >= 200 && (int) $statusCode < 300) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected function makeReturnTypeNullable(array $returnType): array
