@@ -652,12 +652,21 @@ class ClientGenerator
         }
 
         foreach (array_keys($responses) as $statusCode) {
-            if ($statusCode !== '204' && preg_match('/^\d{3}$/', $statusCode) && (int) $statusCode >= 200 && (int) $statusCode < 300) {
+            if ($statusCode !== '204' && $this->isSuccessfulResponseStatus($statusCode)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    protected function isSuccessfulResponseStatus(string $statusCode): bool
+    {
+        if ($statusCode === '2XX') {
+            return true;
+        }
+
+        return preg_match('/^\d{3}$/', $statusCode) === 1 && (int) $statusCode >= 200 && (int) $statusCode < 300;
     }
 
     protected function makeReturnTypeNullable(array $returnType): array
