@@ -71,6 +71,19 @@ class ClientTest extends TestCase
         $this->assertInstanceOf(AbstractModel::class, $order);
     }
 
+    public function testMethodReturnsNullForNoContentSuccessResponse()
+    {
+        $response = Message::parseResponse(implode("\r\n", [
+            'HTTP/1.1 204 No Content',
+            'Content-Type: application/vnd.retailer.v11+json',
+            '',
+            '',
+        ]));
+        $this->httpClientMock->method('request')->willReturn($response);
+
+        $this->assertNull($this->client->getNotForSaleReasons('test'));
+    }
+
     public function testMethodUnwrapsMonoFieldResponse()
     {
         $response = Message::parseResponse(file_get_contents(__DIR__ . '/Fixtures/http/200-reduced-orders'));

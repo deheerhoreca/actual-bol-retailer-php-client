@@ -383,6 +383,9 @@
                             }
                         }
                     },
+                    "204": {
+                        "description": "The request was successfully processed, but there are no not-for-sale reasons."
+                    },
                     "400": {
                         "$ref": "../common/responses.yaml#/components/responses/400_BAD_REQUEST"
                     },

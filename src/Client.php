@@ -2405,14 +2405,14 @@ class Client extends BaseClient
     /**
      * Get not for sale reasons for an offer by offer id
      * @param string $offerId The unique identifier of the offer.
-     * @return Model\NotForSaleReasons
+     * @return Model\NotForSaleReasons|null
      * @throws Exception\ConnectException when an error occurred in the HTTP connection.
      * @throws Exception\ResponseException when an unexpected response was received.
      * @throws Exception\UnauthorizedException when the request was unauthorized.
      * @throws Exception\RateLimitException when the throttling limit has been reached for the API user.
      * @throws Exception\Exception when something unexpected went wrong.
      */
-    public function getNotForSaleReasons(string $offerId): Model\NotForSaleReasons
+    public function getNotForSaleReasons(string $offerId): ?Model\NotForSaleReasons
     {
         $url = "retailer/offers/{$offerId}/not-for-sale-reasons";
         $options = [
@@ -2420,6 +2420,7 @@ class Client extends BaseClient
         ];
         $responseTypes = [
             '200' => Model\NotForSaleReasons::class,
+            '204' => 'null',
         ];
 
         return $this->request('GET', $url, $options, $responseTypes);

@@ -108,11 +108,22 @@ class ClientGenerator
         $arguments = $this->extractArguments($methodDefinition);
 
         $nullableReturnType = false;
+        $emptyCollectionOnNull = false;
+        $unwrapsCollection = ! empty($returnType['unwrapsCollection']);
         if ($this->hasInlined404Response($methodDefinition['responses'])) {
             $nullableReturnType = true;
-            if (! isset($returnType['property']) && $returnType['php'] !== 'void') {
-                $returnType['doc'] = $returnType['doc'] . '|null';
-                $returnType['php'] = '?' . $returnType['php'];
+            $emptyCollectionOnNull = $unwrapsCollection;
+            if (! $unwrapsCollection && $returnType['php'] !== 'void') {
+                $returnType = $this->makeReturnTypeNullable($returnType);
+            }
+        }
+
+        if ($this->hasNoContentSuccessResponse($methodDefinition['responses']) && $returnType['php'] !== 'void') {
+            $nullableReturnType = true;
+            if ($unwrapsCollection) {
+                $emptyCollectionOnNull = true;
+            } else {
+                $returnType = $this->makeReturnTypeNullable($returnType);
             }
         }
 
@@ -139,8 +150,8 @@ class ClientGenerator
         $this->addBodyParam($arguments, $code);
         $this->addFormData($arguments, $code);
 
-        $responseContent = $methodDefinition['responses']['200']['content'] ?? $methodDefinition['responses']['201']['content'] ?? $methodDefinition['responses']['202']['content'] ?? $methodDefinition['responses']['204']['content'] ?? $methodDefinition['responses']['207']['content'] ?? $methodDefinition['responses']['400']['content'] ?? null;
-        $code[] = sprintf('            \'produces\' => \'%s\',', array_key_first($responseContent));
+        $responseContent = $this->getResponseContent($methodDefinition['responses']);
+        $code[] = sprintf('            \'produces\' => \'%s\',', array_key_first($responseContent ?? ['application/json' => null]));
 
         if ($methodDefinition['requestBody']['content'] ?? false) {
             $code[] = sprintf('            \'consumes\' => \'%s\',', array_key_first($methodDefinition['requestBody']['content']));
@@ -165,7 +176,8 @@ class ClientGenerator
                 $options
             );
             $code[] = sprintf(
-                '        return $result === null ? [] : $result->%s;',
+                '        return $result === null ? %s : $result->%s;',
+                $emptyCollectionOnNull ? '[]' : 'null',
                 $returnType['property']
             );
         } elseif (isset($returnType['property'])) {
@@ -578,7 +590,8 @@ class ClientGenerator
                     return [
                         'doc' => 'Model\\' . $this->getType($propertySchema['items']['$ref']) . '[]',
                         'php' => 'array',
-                        'property' => $property
+                        'property' => $property,
+                        'unwrapsCollection' => true,
                     ];
                 }
             }
@@ -630,5 +643,63 @@ class ClientGenerator
         }
 
         return ! isset($responses['404']['$ref']);
+    }
+
+    protected function hasNoContentSuccessResponse(array $responses): bool
+    {
+        if (! isset($responses['204'])) {
+            return false;
+        }
+
+        foreach (array_keys($responses) as $statusCode) {
+            if ($statusCode !== '204' && $this->isSuccessfulResponseStatus($statusCode)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected function isSuccessfulResponseStatus(string $statusCode): bool
+    {
+        $statusCode = strtoupper($statusCode);
+
+        if (preg_match('/^(?:2\d\d|2\dX|2X\d|2XX|2X)$/', $statusCode) === 1) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+
+    protected function makeReturnTypeNullable(array $returnType): array
+    {
+        if (! str_contains($returnType['doc'], '|null')) {
+            $returnType['doc'] .= '|null';
+        }
+
+        if (! str_starts_with($returnType['php'], '?')) {
+            $returnType['php'] = '?' . $returnType['php'];
+        }
+
+        return $returnType;
+    }
+
+    protected function getResponseContent(array $responses): ?array
+    {
+        foreach (['200', '201', '202', '207'] as $statusCode) {
+            if (isset($responses[$statusCode]['content'])) {
+                return $responses[$statusCode]['content'];
+            }
+        }
+
+        foreach ($responses as $statusCode => $response) {
+            if ($this->isSuccessfulResponseStatus($statusCode) && isset($response['content'])) {
+                return $response['content'];
+            }
+        }
+
+        return $responses['400']['content'] ?? null;
     }
 }
