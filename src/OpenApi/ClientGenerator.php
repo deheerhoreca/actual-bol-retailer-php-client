@@ -652,7 +652,7 @@ class ClientGenerator
         }
 
         foreach (array_keys($responses) as $statusCode) {
-            if ($statusCode !== '204' && is_numeric($statusCode) && (int) $statusCode >= 200 && (int) $statusCode < 300) {
+            if ($statusCode !== '204' && preg_match('/^\d{3}$/', $statusCode) && (int) $statusCode >= 200 && (int) $statusCode < 300) {
                 return true;
             }
         }
