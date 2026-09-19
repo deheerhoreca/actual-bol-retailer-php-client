@@ -108,12 +108,18 @@ class ClientGenerator
         $arguments = $this->extractArguments($methodDefinition);
 
         $nullableReturnType = false;
+        $emptyCollectionOnNull = false;
         if ($this->hasInlined404Response($methodDefinition['responses'])) {
             $nullableReturnType = true;
+            $emptyCollectionOnNull = isset($returnType['property']);
             if (! isset($returnType['property']) && $returnType['php'] !== 'void') {
-                $returnType['doc'] = $returnType['doc'] . '|null';
-                $returnType['php'] = '?' . $returnType['php'];
+                $returnType = $this->makeReturnTypeNullable($returnType);
             }
+        }
+
+        if ($this->hasNoContentSuccessResponse($methodDefinition['responses']) && $returnType['php'] !== 'void') {
+            $nullableReturnType = true;
+            $returnType = $this->makeReturnTypeNullable($returnType);
         }
 
         $argumentsList = $this->getArgumentsList($arguments);
@@ -165,7 +171,8 @@ class ClientGenerator
                 $options
             );
             $code[] = sprintf(
-                '        return $result === null ? [] : $result->%s;',
+                '        return $result === null ? %s : $result->%s;',
+                $emptyCollectionOnNull ? '[]' : 'null',
                 $returnType['property']
             );
         } elseif (isset($returnType['property'])) {
@@ -630,5 +637,23 @@ class ClientGenerator
         }
 
         return ! isset($responses['404']['$ref']);
+    }
+
+    protected function hasNoContentSuccessResponse(array $responses): bool
+    {
+        return isset($responses['204']) && isset($responses['200']);
+    }
+
+    protected function makeReturnTypeNullable(array $returnType): array
+    {
+        if (! str_contains($returnType['doc'], '|null')) {
+            $returnType['doc'] .= '|null';
+        }
+
+        if (! str_starts_with($returnType['php'], '?')) {
+            $returnType['php'] = '?' . $returnType['php'];
+        }
+
+        return $returnType;
     }
 }
