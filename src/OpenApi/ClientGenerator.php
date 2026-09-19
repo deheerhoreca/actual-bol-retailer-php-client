@@ -688,7 +688,7 @@ class ClientGenerator
 
     protected function getResponseContent(array $responses): ?array
     {
-        foreach (['200', '201', '202', '204', '207'] as $statusCode) {
+        foreach (['200', '201', '202', '207'] as $statusCode) {
             if (isset($responses[$statusCode]['content'])) {
                 return $responses[$statusCode]['content'];
             }
