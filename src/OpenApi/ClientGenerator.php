@@ -150,8 +150,8 @@ class ClientGenerator
         $this->addBodyParam($arguments, $code);
         $this->addFormData($arguments, $code);
 
-        $responseContent = $methodDefinition['responses']['200']['content'] ?? $methodDefinition['responses']['201']['content'] ?? $methodDefinition['responses']['202']['content'] ?? $methodDefinition['responses']['204']['content'] ?? $methodDefinition['responses']['207']['content'] ?? $methodDefinition['responses']['400']['content'] ?? null;
-        $code[] = sprintf('            \'produces\' => \'%s\',', array_key_first($responseContent));
+        $responseContent = $this->getResponseContent($methodDefinition['responses']);
+        $code[] = sprintf('            \'produces\' => \'%s\',', array_key_first($responseContent ?? ['application/json' => null]));
 
         if ($methodDefinition['requestBody']['content'] ?? false) {
             $code[] = sprintf('            \'consumes\' => \'%s\',', array_key_first($methodDefinition['requestBody']['content']));
@@ -684,5 +684,22 @@ class ClientGenerator
         }
 
         return $returnType;
+    }
+
+    protected function getResponseContent(array $responses): ?array
+    {
+        foreach (['200', '201', '202', '204', '207'] as $statusCode) {
+            if (isset($responses[$statusCode]['content'])) {
+                return $responses[$statusCode]['content'];
+            }
+        }
+
+        foreach ($responses as $statusCode => $response) {
+            if ($this->isSuccessfulResponseStatus($statusCode) && isset($response['content'])) {
+                return $response['content'];
+            }
+        }
+
+        return $responses['400']['content'] ?? null;
     }
 }
