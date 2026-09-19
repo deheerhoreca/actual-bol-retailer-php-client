@@ -662,6 +662,8 @@ class ClientGenerator
 
     protected function isSuccessfulResponseStatus(string $statusCode): bool
     {
+        $statusCode = strtoupper($statusCode);
+
         if ($statusCode === '2XX') {
             return true;
         }
